@@ -1,6 +1,5 @@
 """Main entry point for the application"""
 
-
 from fastapi_01.Demo import main as demo_main
 
 

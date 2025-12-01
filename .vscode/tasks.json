@@ -1,0 +1,77 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "FastAPI: Start Server",
+			"type": "shell",
+			"command": "uv run uvicorn fastapi_01.app:app --reload --host 0.0.0.0 --port 8000",
+			"isBackground": true,
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": false
+			}
+		},
+		{
+			"label": "Demo: Run Script",
+			"type": "shell",
+			"command": "uv run demo",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Tests: Run All",
+			"type": "shell",
+			"command": "uv run pytest -v",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Tests: Run with Coverage",
+			"type": "shell",
+			"command": "uv run pytest --cov=fastapi_01 --cov-report=html --cov-report=term",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Ruff: Lint",
+			"type": "shell",
+			"command": "uv run ruff check .",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Ruff: Format",
+			"type": "shell",
+			"command": "uv run ruff format .",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		},
+		{
+			"label": "Ruff: Fix & Format",
+			"type": "shell",
+			"command": "uv run ruff check --fix . && uv run ruff format .",
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			}
+		}
+	]
+}

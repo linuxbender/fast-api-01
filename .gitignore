@@ -30,7 +30,11 @@ env/
 
 # IDEs
 # VS Code
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/tasks.json
 *.code-workspace
 
 # IntelliJ IDEA
