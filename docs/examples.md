@@ -1,10 +1,10 @@
 # Examples
 
-Praktische Code-Beispiele und Patterns für FastAPI 01.
+Practical code examples and patterns for FastAPI 01.
 
-## Basis Beispiele
+## Basic Examples
 
-### Einfacher GET Endpoint
+### Simple GET Endpoint
 
 ```python
 @app.get("/hello")
@@ -12,7 +12,7 @@ def hello() -> dict[str, str]:
     return {"message": "Hello World"}
 ```
 
-### Path Parameter
+### Path Parameters
 
 ```python
 @app.get("/users/{user_id}")
@@ -20,7 +20,7 @@ def get_user(user_id: int) -> dict[str, int]:
     return {"user_id": user_id}
 ```
 
-### Query Parameter
+### Query Parameters
 
 ```python
 @app.get("/search")
@@ -28,7 +28,7 @@ def search(q: str, limit: int = 10) -> dict[str, str | int]:
     return {"query": q, "limit": limit}
 ```
 
-### Optionale Parameter
+### Optional Parameters
 
 ```python
 @app.get("/items/{item_id}")
@@ -40,7 +40,7 @@ def get_item(item_id: int, details: bool = False) -> dict:
 
 ## Pydantic Models
 
-### Request Body mit Model
+### Request Body with Model
 
 ```python
 from pydantic import BaseModel
@@ -72,7 +72,7 @@ def get_user(user_id: int) -> UserResponse:
     )
 ```
 
-## Fortgeschrittene Patterns
+## Advanced Patterns
 
 ### Dependency Injection
 
@@ -147,7 +147,7 @@ def test_create_item(client: TestClient):
     assert data["name"] == "Test"
 ```
 
-### Test mit Headers
+### Test with Headers
 
 ```python
 def test_with_auth(client: TestClient):
@@ -160,7 +160,7 @@ def test_with_auth(client: TestClient):
 
 ### Environment Variables
 
-Erstelle eine `.env` Datei:
+Create a `.env` file:
 
 ```env
 DATABASE_URL=postgresql://user:pass@localhost/db
@@ -168,7 +168,7 @@ SECRET_KEY=your-secret-key-here
 DEBUG=true
 ```
 
-Verwende in der App:
+Use in your app:
 
 ```python
 from pydantic_settings import BaseSettings

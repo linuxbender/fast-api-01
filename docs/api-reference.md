@@ -1,6 +1,6 @@
 # API Reference
 
-Dokumentation aller verfügbaren API-Endpoints.
+Documentation of all available API endpoints.
 
 ## Base URL
 
@@ -12,7 +12,7 @@ http://127.0.0.1:8000
 
 ### GET /
 
-Root endpoint der API.
+Root endpoint of the API.
 
 **Response**
 
@@ -29,20 +29,20 @@ curl http://127.0.0.1:8000/
 ```
 
 **Response Code**
-- `200 OK` - Erfolgreiche Anfrage
+- `200 OK` - Successful request
 
 ---
 
 ### GET /items/{item_id}
 
-Ruft ein Item anhand seiner ID ab.
+Retrieves an item by its ID.
 
 **Parameters**
 
 | Name | Type | Location | Required | Description |
 |------|------|----------|----------|-------------|
-| `item_id` | integer | path | Yes | Die ID des Items |
-| `q` | string | query | No | Optionaler Suchparameter |
+| `item_id` | integer | path | Yes | The ID of the item |
+| `q` | string | query | No | Optional search parameter |
 
 **Response**
 
@@ -56,16 +56,16 @@ Ruft ein Item anhand seiner ID ab.
 **Examples**
 
 ```bash
-# Mit Query Parameter
+# With query parameter
 curl http://127.0.0.1:8000/items/42?q=test
 
-# Ohne Query Parameter
+# Without query parameter
 curl http://127.0.0.1:8000/items/42
 ```
 
 **Response Codes**
-- `200 OK` - Item gefunden
-- `422 Unprocessable Entity` - Ungültige Parameter
+- `200 OK` - Item found
+- `422 Unprocessable Entity` - Invalid parameters
 
 ---
 
@@ -84,7 +84,7 @@ curl http://127.0.0.1:8000/items/42
 
 ### Validation Error (422)
 
-Wird zurückgegeben, wenn die Request-Parameter ungültig sind.
+Returned when request parameters are invalid.
 
 ```json
 {
@@ -100,17 +100,17 @@ Wird zurückgegeben, wenn die Request-Parameter ungültig sind.
 
 ## Interactive Documentation
 
-FastAPI bietet automatische, interaktive API-Dokumentation:
+FastAPI provides automatic, interactive API documentation:
 
 - **Swagger UI**: http://127.0.0.1:8000/docs
-  - Interaktive API-Tests direkt im Browser
-  - Automatisch generierte Request/Response Schemas
+  - Interactive API tests directly in the browser
+  - Automatically generated Request/Response schemas
 
 - **ReDoc**: http://127.0.0.1:8000/redoc
-  - Alternative Dokumentationsansicht
-  - Übersichtlicher für große APIs
+  - Alternative documentation view
+  - Clearer overview for large APIs
 
-## Python Client Beispiel
+## Python Client Example
 
 ```python
 import httpx
@@ -128,7 +128,7 @@ print(response.json())
 
 ## Testing
 
-Siehe `tests/test_app.py` für Test-Beispiele mit dem FastAPI TestClient.
+See `tests/test_app.py` for test examples with the FastAPI TestClient.
 
 ```python
 from fastapi.testclient import TestClient

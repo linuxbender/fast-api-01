@@ -1,87 +1,87 @@
 # Installation
 
-## Voraussetzungen
+## Prerequisites
 
 - Python 3.13+
 - [uv](https://github.com/astral-sh/uv) Package Manager
 
-## UV installieren
+## Install UV
 
 ```bash
 # macOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Mit Homebrew (macOS)
+# With Homebrew (macOS)
 brew install uv
 ```
 
-## Projekt Setup
+## Project Setup
 
-### 1. Repository klonen
+### 1. Clone Repository
 
 ```bash
 git clone <repository-url>
 cd FastAPI_01
 ```
 
-### 2. Dependencies installieren
+### 2. Install Dependencies
 
-#### Nur Production Dependencies
+#### Production Dependencies Only
 
 ```bash
 make install
-# oder
+# or
 uv pip install -e .
 ```
 
-#### Alle Dependencies (inkl. Dev-Tools)
+#### All Dependencies (including Dev Tools)
 
 ```bash
 make install-dev
-# oder
+# or
 uv pip install -e ".[dev]"
 ```
 
 ### 3. Virtual Environment
 
-UV erstellt automatisch ein Virtual Environment im `.venv/` Ordner.
+UV automatically creates a virtual environment in the `.venv/` folder.
 
-### 4. Projekt testen
+### 4. Test the Project
 
 ```bash
-# Tests ausführen
+# Run tests
 make test
 
-# Server starten
+# Start server
 make run
 ```
 
-## Manuelle Installation ohne Makefile
+## Manual Installation without Makefile
 
 ```bash
-# Virtual Environment erstellen
+# Create virtual environment
 uv venv
 
-# Aktivieren
+# Activate
 source .venv/bin/activate  # macOS/Linux
 .venv\Scripts\activate     # Windows
 
-# Dependencies installieren
+# Install dependencies
 uv pip install -e ".[dev]"
 
-# Tests ausführen
+# Run tests
 uv run pytest
 
-# Server starten
+# Start server
 uv run uvicorn fastapi_01.app:app --reload
 ```
 
-## Entwicklungsumgebung
+## Development Environment
 
-### Empfohlene IDE
+### Recommended IDE
 
-- **VS Code** mit Python Extension
-- **PyCharm** Professional oder Community
+- **VS Code** with Python Extension
+- **PyCharm** Professional or Community
 
 ### VS Code Extensions
 
@@ -89,7 +89,7 @@ uv run uvicorn fastapi_01.app:app --reload
 - Pylance
 - Ruff (Linting & Formatting)
 
-## Nächste Schritte
+## Next Steps
 
 - [Getting Started Guide](getting-started.md)
 - [API Reference](api-reference.md)

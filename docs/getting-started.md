@@ -1,8 +1,8 @@
 # Getting Started
 
-Ein schneller Einstieg in die Entwicklung mit FastAPI 01.
+A quick guide to start developing with FastAPI 01.
 
-## Projekt starten
+## Starting the Project
 
 ### Development Server
 
@@ -10,36 +10,36 @@ Ein schneller Einstieg in die Entwicklung mit FastAPI 01.
 make run
 ```
 
-Der Server läuft auf: http://127.0.0.1:8000
+The server runs at: http://127.0.0.1:8000
 
-### API Dokumentation aufrufen
+### Access API Documentation
 
-FastAPI generiert automatisch interaktive API-Dokumentation:
+FastAPI automatically generates interactive API documentation:
 
 - **Swagger UI**: http://127.0.0.1:8000/docs
 - **ReDoc**: http://127.0.0.1:8000/redoc
 
-## Projektstruktur verstehen
+## Understanding the Project Structure
 
 ```
 FastAPI_01/
-├── src/fastapi_01/          # Hauptcode
-│   ├── __init__.py          # Package Initialisierung
-│   ├── __main__.py          # CLI Entry Point
-│   ├── app.py               # FastAPI Application
-│   └── Demo.py              # Demo Module
-├── tests/                   # Test Suite
-│   ├── conftest.py          # Pytest Configuration
-│   └── test_app.py          # API Tests
-├── docs/                    # Dokumentation
-├── pyproject.toml           # Projekt Configuration
-├── Makefile                 # Development Commands
+├── src/fastapi_01/          # Main code
+│   ├── __init__.py          # Package initialization
+│   ├── __main__.py          # CLI entry point
+│   ├── app.py               # FastAPI application
+│   └── Demo.py              # Demo module
+├── tests/                   # Test suite
+│   ├── conftest.py          # Pytest configuration
+│   └── test_app.py          # API tests
+├── docs/                    # Documentation
+├── pyproject.toml           # Project configuration
+├── Makefile                 # Development commands
 └── README.md
 ```
 
-## Ersten Endpoint erstellen
+## Creating Your First Endpoint
 
-### 1. Endpoint in app.py hinzufügen
+### 1. Add Endpoint to app.py
 
 ```python
 @app.get("/hello/{name}")
@@ -48,9 +48,9 @@ def say_hello(name: str) -> dict[str, str]:
     return {"message": f"Hello, {name}!"}
 ```
 
-### 2. Test schreiben
+### 2. Write a Test
 
-Erstelle einen Test in `tests/test_app.py`:
+Create a test in `tests/test_app.py`:
 
 ```python
 def test_say_hello(client: TestClient):
@@ -60,13 +60,13 @@ def test_say_hello(client: TestClient):
     assert response.json() == {"message": "Hello, World!"}
 ```
 
-### 3. Tests ausführen
+### 3. Run Tests
 
 ```bash
 make test
 ```
 
-### 4. Code formatieren
+### 4. Format Code
 
 ```bash
 make fix
@@ -74,51 +74,51 @@ make fix
 
 ## Development Workflow
 
-### 1. Neue Features entwickeln
+### 1. Develop New Features
 
 ```bash
-# Tests schreiben
-# Code implementieren
-# Tests ausführen
+# Write tests
+# Implement code
+# Run tests
 make test
 
-# Code prüfen und formatieren
+# Check and format code
 make fix
 ```
 
-### 2. Server im Watch-Mode
+### 2. Server in Watch Mode
 
-Der Development Server (`make run`) erkennt automatisch Änderungen und lädt neu.
+The development server (`make run`) automatically detects changes and reloads.
 
-### 3. Code Quality sicherstellen
+### 3. Ensure Code Quality
 
 ```bash
 # Linting
 make lint
 
-# Formatierung
+# Formatting
 make format
 
-# Oder beides mit Auto-Fix
+# Or both with auto-fix
 make fix
 ```
 
 ## Makefile Commands
 
-| Command | Beschreibung |
+| Command | Description |
 |---------|-------------|
-| `make run` | Start Development Server |
-| `make test` | Run Tests |
-| `make test-cov` | Run Tests with Coverage |
-| `make lint` | Check Code Quality |
-| `make format` | Format Code |
-| `make fix` | Auto-fix + Format |
-| `make install` | Install Dependencies |
-| `make install-dev` | Install Dev Dependencies |
-| `make demo` | Run Demo Script |
-| `make clean` | Clean Cache Files |
+| `make run` | Start development server |
+| `make test` | Run tests |
+| `make test-cov` | Run tests with coverage |
+| `make lint` | Check code quality |
+| `make format` | Format code |
+| `make fix` | Auto-fix + format |
+| `make install` | Install dependencies |
+| `make install-dev` | Install dev dependencies |
+| `make demo` | Run demo script |
+| `make clean` | Clean cache files |
 
-## Nächste Schritte
+## Next Steps
 
-- [API Reference](api-reference.md) - Alle verfügbaren Endpoints
-- [Examples](examples.md) - Code-Beispiele und Patterns
+- [API Reference](api-reference.md) - All available endpoints
+- [Examples](examples.md) - Code examples and patterns

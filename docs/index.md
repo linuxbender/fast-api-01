@@ -1,12 +1,12 @@
 # FastAPI 01 Documentation
 
-Willkommen zur Dokumentation des FastAPI 01 Projekts.
+Welcome to the FastAPI 01 project documentation.
 
-## Übersicht
+## Overview
 
-FastAPI 01 ist ein modernes Python-Projekt, das FastAPI als Web-Framework verwendet und moderne Best Practices befolgt.
+FastAPI 01 is a modern Python project using FastAPI as a web framework and following modern best practices.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
 - [Installation](installation.md)
 - [Getting Started](getting-started.md)
@@ -15,12 +15,12 @@ FastAPI 01 ist ein modernes Python-Projekt, das FastAPI als Web-Framework verwen
 
 ## Features
 
-- FastAPI Web Framework
-- Modern Python Package Structure (src/ Layout)
-- UV Package Manager
-- Type Hints
-- Pytest Tests
-- Linting & Formatting mit Ruff
+- FastAPI web framework
+- Modern Python package structure (src/ layout)
+- UV package manager
+- Type hints
+- Pytest tests
+- Linting & formatting with Ruff
 
 ## Quick Start
 
@@ -28,10 +28,10 @@ FastAPI 01 ist ein modernes Python-Projekt, das FastAPI als Web-Framework verwen
 # Installation
 make install-dev
 
-# Server starten
+# Start server
 make run
 
-# Tests ausführen
+# Run tests
 make test
 ```
 

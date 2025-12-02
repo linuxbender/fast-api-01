@@ -1,6 +1,6 @@
 # FastAPI 01
 
-Ein modernes FastAPI-Projekt mit Best Practices.
+A modern FastAPI project following best practices.
 
 ## Features
 
@@ -9,59 +9,59 @@ Ein modernes FastAPI-Projekt mit Best Practices.
 - ✅ UV Package Manager
 - ✅ Type Hints
 - ✅ Pytest Tests
-- ✅ Linting & Formatting mit Ruff
+- ✅ Linting & Formatting with Ruff
 
 ## Setup
 
-### Voraussetzungen
+### Prerequisites
 
 - Python 3.13+
-- [uv](https://github.com/astral-sh/uv) installiert
+- [uv](https://github.com/astral-sh/uv) installed
 
 ### Installation
 
-1. Repository klonen und Dependencies installieren:
+1. Clone repository and install dependencies:
 
 ```bash
 make install
 ```
 
-Oder manuell:
+Or manually:
 
 ```bash
 uv pip install -e .
 ```
 
-## Verwendung
+## Usage
 
-### Development Server starten
+### Start Development Server
 
 ```bash
 make run
-# oder
+# or
 make dev
 ```
 
-Der Server läuft dann auf: http://127.0.0.1:8000
+The server will run at: http://127.0.0.1:8000
 
-### API Dokumentation
+### API Documentation
 
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-### Demo Script ausführen
+### Run Demo Script
 
 ```bash
 make demo
 ```
 
-### Tests ausführen
+### Run Tests
 
 ```bash
 make test
 ```
 
-### Code formatieren
+### Format Code
 
 ```bash
 make format
@@ -73,7 +73,7 @@ make format
 make lint
 ```
 
-## Projektstruktur
+## Project Structure
 
 ```
 FastAPI_01/
@@ -81,14 +81,14 @@ FastAPI_01/
 │   └── fastapi_01/
 │       ├── __init__.py
 │       ├── __main__.py
-│       ├── app.py          # FastAPI Anwendung
+│       ├── app.py          # FastAPI application
 │       └── Demo.py
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py
 │   └── test_app.py
-├── pyproject.toml          # Projekt-Konfiguration
-├── Makefile                # Dev-Commands
+├── pyproject.toml          # Project configuration
+├── Makefile                # Dev commands
 └── README.md
 ```
 
@@ -96,17 +96,17 @@ FastAPI_01/
 
 ### Makefile Commands
 
-- `make run` / `make dev` - FastAPI Server starten
-- `make demo` - Demo Script ausführen
-- `make install` - Dependencies installieren
-- `make test` - Tests ausführen
-- `make lint` - Code Linting
-- `make format` - Code formatieren
+- `make run` / `make dev` - Start FastAPI server
+- `make demo` - Run demo script
+- `make install` - Install dependencies
+- `make test` - Run tests
+- `make lint` - Code linting
+- `make format` - Format code
 
-### Mit uv direkt
+### Using uv Directly
 
 ```bash
-# Server starten
+# Start server
 uv run uvicorn fastapi_01.app:app --reload
 
 # Tests
@@ -115,7 +115,7 @@ uv run pytest
 # Linting
 uv run ruff check .
 
-# Formatieren
+# Format
 uv run ruff format .
 ```
 
