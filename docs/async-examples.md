@@ -1,31 +1,31 @@
 # DemoAsync - Async/Await Examples
 
-Umfassende Beispiele für asynchrone Programmierung in Python mit `asyncio`.
+Comprehensive examples for asynchronous programming in Python with `asyncio`.
 
-## Übersicht
+## Overview
 
-Die `DemoAsync`-Klasse demonstriert verschiedene Async/Await-Patterns mit Standard-Python-Bibliotheken:
+The `DemoAsync` class demonstrates various async/await patterns using standard Python libraries:
 
-- ✅ Parallele Task-Ausführung mit `asyncio.gather()`
-- ✅ Sequentielle Task-Ausführung mit `await`
-- ✅ Simulation von Daten-Abrufen (z.B. API-Calls)
-- ✅ Timeout-Handling mit `asyncio.wait_for()`
-- ✅ Processing mit `asyncio.as_completed()`
-- ✅ Exception-Handling in parallelen Tasks
+- ✅ Parallel task execution with `asyncio.gather()`
+- ✅ Sequential task execution with `await`
+- ✅ Simulating data fetching (e.g., API calls)
+- ✅ Timeout handling with `asyncio.wait_for()`
+- ✅ Processing with `asyncio.as_completed()`
+- ✅ Exception handling in parallel tasks
 
-## Verwendung
+## Usage
 
-### Alle Beispiele ausführen
+### Run All Examples
 
 ```bash
-# Direkt ausführen
+# Run directly
 uv run python src/fastapi_01/DemoAsync.py
 
-# Oder über das Hauptmodul
+# Or via main module
 uv run python -m fastapi_01
 ```
 
-### Einzelne Beispiele verwenden
+### Use Individual Examples
 
 ```python
 import asyncio
@@ -34,57 +34,57 @@ from fastapi_01.DemoAsync import DemoAsync
 async def main():
     demo = DemoAsync()
     
-    # Parallele Tasks
+    # Parallel tasks
     results = await demo.parallel_tasks_example()
     
-    # Sequentielle Tasks
+    # Sequential tasks
     results = await demo.sequential_tasks_example()
     
-    # Daten parallel abrufen
+    # Fetch data in parallel
     data = await demo.fetch_multiple_data_example()
     
-    # Timeout-Handling
+    # Timeout handling
     result = await demo.timeout_example()
     
-    # as_completed Pattern
+    # as_completed pattern
     results = await demo.as_completed_example()
     
-    # Exception Handling
+    # Exception handling
     results = await demo.task_with_exception_handling()
 
-# Ausführen
+# Execute
 asyncio.run(main())
 ```
 
-## Beispiele im Detail
+## Examples in Detail
 
-### 1. Parallele Tasks
+### 1. Parallel Tasks
 
 ```python
 async def parallel_example():
     demo = DemoAsync()
-    # Diese Tasks laufen parallel (nicht sequentiell!)
+    # These tasks run in parallel (not sequentially!)
     results = await asyncio.gather(
         demo.simple_async_task("Task-A", 1.0),
         demo.simple_async_task("Task-B", 1.5),
         demo.simple_async_task("Task-C", 0.8),
     )
-    # Dauer: ~1.5s (längste Task), nicht 3.3s (Summe)
+    # Duration: ~1.5s (longest task), not 3.3s (sum)
 ```
 
-### 2. Sequentielle Tasks
+### 2. Sequential Tasks
 
 ```python
 async def sequential_example():
     demo = DemoAsync()
-    # Diese Tasks laufen nacheinander
+    # These tasks run one after another
     result1 = await demo.simple_async_task("Task-1", 0.5)
     result2 = await demo.simple_async_task("Task-2", 0.5)
     result3 = await demo.simple_async_task("Task-3", 0.5)
-    # Dauer: ~1.5s (0.5 + 0.5 + 0.5)
+    # Duration: ~1.5s (0.5 + 0.5 + 0.5)
 ```
 
-### 3. Timeout-Handling
+### 3. Timeout Handling
 
 ```python
 async def timeout_example():
@@ -94,7 +94,7 @@ async def timeout_example():
             timeout=2.0
         )
     except asyncio.TimeoutError:
-        print("Task hat zu lange gedauert!")
+        print("Task took too long!")
 ```
 
 ### 4. as_completed Pattern
@@ -103,100 +103,100 @@ async def timeout_example():
 async def as_completed_example():
     tasks = [fetch_data(i) for i in range(5)]
     
-    # Verarbeite Ergebnisse sobald sie verfügbar sind
+    # Process results as soon as they're available
     for coro in asyncio.as_completed(tasks):
         result = await coro
-        print(f"Ergebnis verfügbar: {result}")
+        print(f"Result available: {result}")
 ```
 
 ### 5. Exception Handling
 
 ```python
 async def exception_handling_example():
-    # Führe Tasks aus und fange Exceptions ab
+    # Execute tasks and catch exceptions
     results = await asyncio.gather(
         successful_task(),
         failing_task(),
         another_task(),
-        return_exceptions=True  # Wichtig!
+        return_exceptions=True  # Important!
     )
     
     for result in results:
         if isinstance(result, Exception):
-            print(f"Fehler: {result}")
+            print(f"Error: {result}")
         else:
-            print(f"Erfolg: {result}")
+            print(f"Success: {result}")
 ```
 
-## Zeit-Messungen
+## Time Measurements
 
-Alle Beispiele zeigen Start- und Endzeiten mit Millisekunden-Präzision:
+All examples show start and end times with millisecond precision:
 
 ```
-[14:23:45.123] Start: Parallele Tasks
+[14:23:45.123] Start: Parallel Tasks
 [14:23:45.123] Start: Task-A
 [14:23:45.124] Start: Task-B
 [14:23:45.124] Start: Task-C
-[14:23:45.924] Ende: Task-C (Duration: 0.800s)
-[14:23:46.125] Ende: Task-A (Duration: 1.001s)
-[14:23:46.625] Ende: Task-B (Duration: 1.501s)
-[14:23:46.625] Ende: Parallele Tasks (Duration: 1.502s)
+[14:23:45.924] End: Task-C (Duration: 0.800s)
+[14:23:46.125] End: Task-A (Duration: 1.001s)
+[14:23:46.625] End: Task-B (Duration: 1.501s)
+[14:23:46.625] End: Parallel Tasks (Duration: 1.502s)
 ```
 
-## Tests ausführen
+## Run Tests
 
 ```bash
-# Alle Tests
+# All tests
 uv run pytest tests/test_demo_async.py -v
 
-# Mit Coverage
+# With coverage
 uv run pytest tests/test_demo_async.py --cov=fastapi_01.DemoAsync --cov-report=term
 
-# Spezifischer Test
+# Specific test
 uv run pytest tests/test_demo_async.py::TestDemoAsync::test_parallel_tasks_example_runs_tasks_concurrently -v
 ```
 
-**Test-Coverage: 94%** ✅
+**Test Coverage: 94%** ✅
 
-## Wichtige Konzepte
+## Important Concepts
 
 ### asyncio.gather() vs await
 
-- **`asyncio.gather()`**: Führt Tasks parallel aus
-- **`await`**: Wartet auf eine Task bevor die nächste startet (sequentiell)
+- **`asyncio.gather()`**: Executes tasks in parallel
+- **`await`**: Waits for one task to complete before starting the next (sequential)
 
 ```python
-# Parallel (schnell)
+# Parallel (fast)
 results = await asyncio.gather(task1(), task2(), task3())
 
-# Sequentiell (langsam)
+# Sequential (slow)
 result1 = await task1()
 result2 = await task2()
 result3 = await task3()
 ```
 
-### Wann Async verwenden?
+### When to Use Async?
 
-✅ **Gut für:**
-- I/O-gebundene Operationen (Netzwerk, Dateien, Datenbanken)
-- Mehrere externe API-Calls
-- Gleichzeitiges Warten auf mehrere Ressourcen
+✅ **Good for:**
+- I/O-bound operations (network, files, databases)
+- Multiple external API calls
+- Waiting for multiple resources concurrently
 
-❌ **Nicht gut für:**
-- CPU-intensive Berechnungen (verwende `multiprocessing` stattdessen)
-- Code der keine async-Operationen hat
+❌ **Not good for:**
+- CPU-intensive computations (use `multiprocessing` instead)
+- Code without any async operations
 
 ## Best Practices
 
-1. **Verwende Type Hints**: Alle Funktionen haben vollständige Type Hints
-2. **Docstrings**: Alle öffentlichen Funktionen sind dokumentiert
-3. **Error Handling**: Verwende `return_exceptions=True` bei `gather()`
-4. **Timeouts**: Setze Timeouts für externe Operationen
-5. **Testing**: Teste async Code mit `pytest-anyio` oder `pytest-asyncio`
+1. **Use Type Hints**: All functions have complete type hints
+2. **Docstrings**: All public functions are documented
+3. **Error Handling**: Use `return_exceptions=True` with `gather()`
+4. **Timeouts**: Set timeouts for external operations
+5. **Testing**: Test async code with `pytest-anyio` or `pytest-asyncio`
 
-## Weitere Ressourcen
+## Further Resources
 
-- [Python asyncio Dokumentation](https://docs.python.org/3/library/asyncio.html)
+- [Python asyncio Documentation](https://docs.python.org/3/library/asyncio.html)
 - [Real Python: Async IO in Python](https://realpython.com/async-io-python/)
 - [FastAPI Async Tutorial](https://fastapi.tiangolo.com/async/)
 
