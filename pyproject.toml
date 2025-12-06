@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "FastAPI 01"
 requires-python = ">=3.14"
 dependencies = [
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
+    "fastapi>=0.124.0",
+    "pydantic>=2.12.5",
+    "uvicorn>=0.38.0",
 ]
 
 [project.optional-dependencies]
