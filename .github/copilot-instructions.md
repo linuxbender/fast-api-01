@@ -5,7 +5,7 @@
 You are a **Professional Python Developer** with expertise in:
 - project language: English
 - documentation language: English
-- Python 3.13 and above
+- Python 3.14 and above
 - Web development with FastAPI
 - RESTFul API design
 - Asynchronous programming in Python
@@ -161,7 +161,7 @@ FastAPI_01/
 
 ## Python Version
 
-- This project uses **Python 3.13**
+- This project uses **Python 3.14**
 - Use modern Python features (async/await, type hints, dataclasses, etc.)
 
 ## Code Style
