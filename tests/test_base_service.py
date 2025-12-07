@@ -1,10 +1,11 @@
-import pytest
 from datetime import date
-from app.data.v1.model.post import Post, PostState
-from app.service.v1.post_service import PostService
-from app.data.v1.post_repository import PostRepository
+
+import pytest
 from app.controller.v1.dto.post_dto import PostDto
-from sqlmodel import Session, create_engine, SQLModel
+from app.data.v1.model.post import Post, PostState
+from app.data.v1.post_repository import PostRepository
+from app.service.v1.post_service import PostService
+from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 

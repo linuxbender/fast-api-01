@@ -9,13 +9,12 @@ import logging
 import sys
 import uuid
 from contextvars import ContextVar
-from typing import Optional
 
 # Context variable to store correlation ID for the current request
-_correlation_id: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
+_correlation_id: ContextVar[str | None] = ContextVar("correlation_id", default=None)
 
 
-def get_correlation_id() -> Optional[str]:
+def get_correlation_id() -> str | None:
     """Get the current correlation ID from context."""
     return _correlation_id.get()
 
@@ -45,8 +44,8 @@ class CorrelationIdFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = None,
-        datefmt: Optional[str] = None,
+        fmt: str | None = None,
+        datefmt: str | None = None,
         include_correlation_id: bool = True,
     ):
         """

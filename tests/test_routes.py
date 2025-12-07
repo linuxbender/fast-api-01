@@ -5,14 +5,13 @@ Tests the centralized route configuration system.
 """
 
 import pytest
-
 from app.config.routes import (
-    RouteConfig,
-    API_VERSION,
     API_BASE_PREFIX,
+    API_VERSION,
     ROUTES,
-    get_route_config,
+    RouteConfig,
     get_all_routes,
+    get_route_config,
     list_routes,
 )
 
@@ -111,7 +110,7 @@ class TestRoutesRegistry:
 
     def test_routes_values_are_route_configs(self):
         """Test all routes are RouteConfig instances."""
-        for name, config in ROUTES.items():
+        for _name, config in ROUTES.items():
             assert isinstance(config, RouteConfig)
             assert hasattr(config, "prefix")
             assert hasattr(config, "tags")
@@ -175,7 +174,7 @@ class TestGetAllRoutes:
         """Test all values in get_all_routes are RouteConfig."""
         routes = get_all_routes()
 
-        for name, config in routes.items():
+        for _name, config in routes.items():
             assert isinstance(config, RouteConfig)
 
     def test_get_all_routes_keys_are_strings(self):

@@ -4,20 +4,16 @@ Test suite for app.config.settings module.
 Tests the environment configuration and settings management.
 """
 
-import os
-from pathlib import Path
-from unittest.mock import patch, MagicMock
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from app.config.settings import (
     Settings,
-    get_settings,
-    reload_settings,
     get_setting,
+    get_settings,
     is_development,
     is_production,
     is_testing,
+    reload_settings,
     should_use_https,
 )
 
@@ -35,8 +31,8 @@ class TestSettings:
         assert settings.server_reload is True
         assert settings.use_https is False
         # ssl_keyfile and ssl_certfile are loaded from .env if it exists
-        assert isinstance(settings.ssl_keyfile, (str, type(None)))
-        assert isinstance(settings.ssl_certfile, (str, type(None)))
+        assert isinstance(settings.ssl_keyfile, str | type(None))
+        assert isinstance(settings.ssl_certfile, str | type(None))
         assert settings.database_url == "sqlite:///app.db"
         assert settings.log_level == "INFO"
 
@@ -246,7 +242,7 @@ LOG_LEVEL=DEBUG
 """)
 
         with patch("app.config.settings.Settings.Config.env_file", str(env_file)):
-            settings = Settings(_env_file=str(env_file))
+            Settings(_env_file=str(env_file))
             # Note: In actual usage, pydantic-settings will load these
 
     def test_settings_config_has_env_file(self):

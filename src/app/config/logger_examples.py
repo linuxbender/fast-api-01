@@ -5,7 +5,7 @@ This shows how logging automatically tracks correlation IDs across
 the application.
 """
 
-from app.config.logger import get_logger, get_correlation_id, set_correlation_id
+from app.config.logger import get_correlation_id, get_logger, set_correlation_id
 
 logger = get_logger(__name__)
 

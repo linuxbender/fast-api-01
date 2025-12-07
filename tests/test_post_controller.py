@@ -9,16 +9,13 @@ Tests all CRUD operations through HTTP endpoints:
 - DELETE /v1/post/{id} - Delete
 """
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, create_engine, SQLModel
-from sqlmodel.pool import StaticPool
-from datetime import date
 
+import pytest
 from app.app import app
 from app.data.database import get_session
-from app.data.v1.model.post import Post, PostState
-from app.controller.v1.dto.post_dto import PostDto
+from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 
 @pytest.fixture(name="client")
@@ -31,7 +28,7 @@ def client_fixture():
         poolclass=StaticPool,
     )
     SQLModel.metadata.create_all(engine)
-    
+
     def get_session_override():
         session = Session(engine)
         try:

@@ -53,12 +53,11 @@ lint:
 
 # Format code with ruff
 format:
-	uv run ruff format .
+	uv run ruff check --fix .
 
 # Lint with auto-fix, then format code
 fix:
 	uv run ruff check --fix .
-	uv run ruff format .
 
 # Run demo script showcasing CRUD operations
 demo:

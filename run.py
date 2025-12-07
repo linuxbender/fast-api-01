@@ -12,8 +12,8 @@ Usage:
     uv run python run.py --help
 """
 
-import sys
 import argparse
+import sys
 from pathlib import Path
 
 try:
@@ -22,8 +22,8 @@ except ImportError:
     print("❌ Error: uvicorn not installed")
     sys.exit(1)
 
-from app.config.settings import get_settings, should_use_https
 from app.config.logger import get_logger
+from app.config.settings import get_settings, should_use_https
 
 logger = get_logger(__name__)
 

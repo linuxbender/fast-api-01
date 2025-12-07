@@ -1,7 +1,9 @@
-from typing import TypeVar, Generic, Type, List, Optional
-from fastapi import APIRouter, HTTPException, status
+from typing import Generic, TypeVar
+
+from fastapi import APIRouter
 from pydantic import BaseModel
 from sqlmodel import SQLModel
+
 from app.service.v1.base_service import BaseService
 
 T = TypeVar("T", bound=SQLModel)  # Entity type
@@ -11,11 +13,11 @@ D = TypeVar("D", bound=BaseModel)  # DTO type
 class BaseController(Generic[T, D]):
     """
     Generic base controller providing FastAPI routes for CRUD operations.
-    
+
     Type Parameters:
         T: SQLModel entity type
         D: Pydantic DTO type
-    
+
     Subclasses should call register_routes() to set up the CRUD endpoints.
     """
 
@@ -23,11 +25,11 @@ class BaseController(Generic[T, D]):
         self,
         router: APIRouter,
         service: BaseService[T, D],
-        dto_class: Type[D],
+        dto_class: type[D],
     ):
         """
         Initialize controller with router and service.
-        
+
         Args:
             router: FastAPI router instance
             service: The service instance

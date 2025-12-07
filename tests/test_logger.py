@@ -5,20 +5,17 @@ Tests the logging setup and correlation ID tracking.
 """
 
 import logging
-from unittest.mock import patch, MagicMock
 from contextvars import ContextVar
-
-import pytest
 
 from app.config.logger import (
     CorrelationIdFilter,
     CorrelationIdFormatter,
-    setup_logging,
+    _correlation_id,
+    generate_correlation_id,
+    get_correlation_id,
     get_logger,
     set_correlation_id,
-    get_correlation_id,
-    generate_correlation_id,
-    _correlation_id,
+    setup_logging,
 )
 
 
@@ -136,7 +133,10 @@ class TestCorrelationIdFormatter:
 
     def test_formatter_initialization(self):
         """Test creating a CorrelationIdFormatter."""
-        fmt = "[%(asctime)s] [%(name)s] [%(levelname)s] [correlation_id=%(correlation_id)s] %(message)s"
+        fmt = (
+            "[%(asctime)s] [%(name)s] [%(levelname)s] "
+            "[correlation_id=%(correlation_id)s] %(message)s"
+        )
         formatter = CorrelationIdFormatter(fmt)
 
         assert isinstance(formatter, logging.Formatter)
@@ -252,11 +252,9 @@ class TestGetLogger:
         logger = get_logger(__name__)
 
         # Check if logger has handlers with filters
-        has_filter = False
         for handler in logger.handlers:
             for log_filter in handler.filters:
                 if isinstance(log_filter, CorrelationIdFilter):
-                    has_filter = True
                     break
 
         # At least root or parent should have the filter
@@ -321,7 +319,7 @@ class TestLoggingConfiguration:
     def test_logger_has_formatters(self):
         """Test that logger formatters are configured."""
         setup_logging()
-        logger = get_logger("config_test")
+        get_logger("config_test")
 
         # Root logger should have handlers
         root_logger = logging.getLogger()

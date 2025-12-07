@@ -10,11 +10,13 @@ This script demonstrates:
 """
 
 from datetime import date
-from sqlmodel import Session, create_engine, SQLModel
-from app.data.v1.model.post import Post, PostState
+
+from sqlmodel import Session, SQLModel, create_engine
+
+from app.controller.v1.dto.post_dto import PostDto
+from app.data.v1.model.post import PostState
 from app.data.v1.post_repository import PostRepository
 from app.service.v1.post_service import PostService
-from app.controller.v1.dto.post_dto import PostDto
 
 # Create in-memory SQLite database
 DATABASE_URL = "sqlite:///:memory:"
@@ -91,7 +93,10 @@ def demo_crud_operations():
     update_dto = PostDto(
         title="Advanced Python Patterns (Updated)",
         subtext="Design patterns in Python - Comprehensive Guide",
-        content="Understanding design patterns is crucial for writing scalable, maintainable code...",
+        content=(
+            "Understanding design patterns is crucial for writing "
+            "scalable, maintainable code..."
+        ),
         author="Bob Smith",
         date=date(2025, 1, 10),
         state=PostState.PUBLISHED,  # Changed from DRAFT to PUBLISHED
@@ -127,7 +132,7 @@ def demo_crud_operations():
     if deleted_post is None:
         print(f"✅ Confirmed: Post with ID {created_post2.id} no longer exists")
     else:
-        print(f"❌ Error: Post still exists")
+        print("❌ Error: Post still exists")
 
     # 8. Final state
     print("\n8️⃣  FINAL STATE - Remaining posts...")

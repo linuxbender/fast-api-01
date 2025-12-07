@@ -8,18 +8,16 @@ Usage:
     uv run python -m app.config.ssl_generator
 """
 
-import os
 import sys
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
 
 try:
     from cryptography import x509
-    from cryptography.x509.oid import NameOID
-    from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import hashes, serialization
     from cryptography.hazmat.primitives.asymmetric import rsa
-    from cryptography.hazmat.primitives import serialization
+    from cryptography.x509.oid import NameOID
 except ImportError:
     print("❌ Error: cryptography module not installed")
     print("   Install it with: uv add --dev cryptography")
@@ -31,7 +29,7 @@ class SSLCertificateGenerator:
 
     def __init__(self, cert_dir: str = "./certs"):
         """Initialize certificate generator.
-        
+
         Args:
             cert_dir: Directory to store certificates
         """
@@ -46,7 +44,7 @@ class SSLCertificateGenerator:
 
     def generate_private_key(self) -> rsa.RSAPrivateKey:
         """Generate RSA private key.
-        
+
         Returns:
             RSA private key
         """
@@ -63,11 +61,11 @@ class SSLCertificateGenerator:
         days_valid: int = 365,
     ) -> x509.Certificate:
         """Generate self-signed certificate.
-        
+
         Args:
             private_key: RSA private key
             days_valid: Number of days certificate is valid
-            
+
         Returns:
             Self-signed certificate
         """
@@ -108,7 +106,7 @@ class SSLCertificateGenerator:
 
     def save_private_key(self, private_key: rsa.RSAPrivateKey) -> None:
         """Save private key to file.
-        
+
         Args:
             private_key: RSA private key to save
         """
@@ -123,7 +121,7 @@ class SSLCertificateGenerator:
 
     def save_certificate(self, cert: x509.Certificate) -> None:
         """Save certificate to file.
-        
+
         Args:
             cert: Certificate to save
         """
@@ -133,7 +131,7 @@ class SSLCertificateGenerator:
 
     def display_cert_info(self, cert: x509.Certificate) -> None:
         """Display certificate information.
-        
+
         Args:
             cert: Certificate to display info for
         """
@@ -150,11 +148,11 @@ class SSLCertificateGenerator:
 
     def generate(self, days_valid: int = 365, force: bool = False) -> bool:
         """Generate self-signed certificate.
-        
+
         Args:
             days_valid: Number of days certificate should be valid
             force: Overwrite existing certificates
-            
+
         Returns:
             True if successful
         """

@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field, ConfigDict
 from datetime import date
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.data.v1.model.post import PostState
 
 

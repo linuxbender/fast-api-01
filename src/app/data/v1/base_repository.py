@@ -1,5 +1,6 @@
-from typing import TypeVar, Generic, Type, List, Optional
-from sqlmodel import SQLModel, Session, select
+from typing import Generic, TypeVar
+
+from sqlmodel import Session, SQLModel, select
 
 T = TypeVar("T", bound=SQLModel)
 
@@ -7,15 +8,15 @@ T = TypeVar("T", bound=SQLModel)
 class BaseRepository(Generic[T]):
     """
     Generic base repository providing CRUD operations.
-    
+
     Type Parameters:
         T: SQLModel entity type
     """
 
-    def __init__(self, session: Session, model_class: Type[T]):
+    def __init__(self, session: Session, model_class: type[T]):
         """
         Initialize repository with database session and model class.
-        
+
         Args:
             session: SQLModel database session
             model_class: The SQLModel entity class
@@ -26,10 +27,10 @@ class BaseRepository(Generic[T]):
     def create(self, entity: T) -> T:
         """
         Create a new entity.
-        
+
         Args:
             entity: The entity to create
-            
+
         Returns:
             The created entity with ID
         """
@@ -38,40 +39,40 @@ class BaseRepository(Generic[T]):
         self.session.refresh(entity)
         return entity
 
-    def read(self, entity_id: int) -> Optional[T]:
+    def read(self, entity_id: int) -> T | None:
         """
         Read an entity by ID.
-        
+
         Args:
             entity_id: The entity ID
-            
+
         Returns:
             The entity or None if not found
         """
         return self.session.get(self.model_class, entity_id)
 
-    def read_all(self, skip: int = 0, limit: int = 100) -> List[T]:
+    def read_all(self, skip: int = 0, limit: int = 100) -> list[T]:
         """
         Read all entities with pagination.
-        
+
         Args:
             skip: Number of records to skip
             limit: Maximum number of records to return
-            
+
         Returns:
             List of entities
         """
         statement = select(self.model_class).offset(skip).limit(limit)
         return self.session.exec(statement).all()
 
-    def update(self, entity_id: int, entity_data: T) -> Optional[T]:
+    def update(self, entity_id: int, entity_data: T) -> T | None:
         """
         Update an entity.
-        
+
         Args:
             entity_id: The entity ID
             entity_data: Updated entity data
-            
+
         Returns:
             The updated entity or None if not found
         """
@@ -92,10 +93,10 @@ class BaseRepository(Generic[T]):
     def delete(self, entity_id: int) -> bool:
         """
         Delete an entity.
-        
+
         Args:
             entity_id: The entity ID
-            
+
         Returns:
             True if deleted, False if not found
         """

@@ -1,9 +1,10 @@
-import pytest
 from datetime import date
-from sqlmodel import Session, create_engine, SQLModel
-from sqlmodel.pool import StaticPool
+
+import pytest
 from app.data.v1.model.post import Post, PostState
 from app.data.v1.post_repository import PostRepository
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 
 @pytest.fixture(name="session")

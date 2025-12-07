@@ -8,7 +8,8 @@ and makes it available throughout the request lifecycle.
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
-from app.config.logger import generate_correlation_id, set_correlation_id, get_logger
+
+from app.config.logger import generate_correlation_id, get_logger, set_correlation_id
 
 logger = get_logger(__name__)
 

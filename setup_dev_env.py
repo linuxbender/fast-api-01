@@ -11,9 +11,8 @@ Usage:
     python setup_dev_env.py
 """
 
-import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

@@ -1,11 +1,12 @@
+
 from fastapi import APIRouter, HTTPException, status
-from typing import List
-from app.controller.v1.base_controller import BaseController
-from app.service.v1.post_service import PostService
-from app.data.v1.model.post import Post
-from app.controller.v1.dto.post_dto import PostDto
-from app.config.routes import get_route_config
+
 from app.config.logger import get_logger
+from app.config.routes import get_route_config
+from app.controller.v1.base_controller import BaseController
+from app.controller.v1.dto.post_dto import PostDto
+from app.data.v1.model.post import Post
+from app.service.v1.post_service import PostService
 
 logger = get_logger(__name__)
 
@@ -13,17 +14,17 @@ logger = get_logger(__name__)
 class PostController(BaseController[Post, PostDto]):
     """
     Controller for Post entity providing REST API endpoints.
-    
+
     Inherits from BaseController with Post entity and PostDto DTO.
     Provides standard CRUD operations via HTTP methods.
-    
+
     Endpoints are defined in central route configuration: app/config/routes.py
     """
 
     def __init__(self, router: APIRouter, service: PostService):
         """
         Initialize PostController with router and PostService.
-        
+
         Args:
             router: FastAPI router instance
             service: The PostService instance
@@ -36,7 +37,7 @@ class PostController(BaseController[Post, PostDto]):
     def register_routes(self) -> None:
         """Register all CRUD routes for posts using central route configuration."""
         tags = self.route_config.tags
-        
+
         @self.router.post(
             "/",
             response_model=PostDto,
@@ -71,12 +72,12 @@ class PostController(BaseController[Post, PostDto]):
 
         @self.router.get(
             "/",
-            response_model=List[PostDto],
+            response_model=list[PostDto],
             tags=tags,
             summary="Read All Posts",
             description="Retrieve all posts with pagination",
         )
-        async def read_all_posts(skip: int = 0, limit: int = 100) -> List[PostDto]:
+        async def read_all_posts(skip: int = 0, limit: int = 100) -> list[PostDto]:
             """Read all posts with pagination."""
             logger.debug(f"Reading all posts with skip={skip}, limit={limit}")
             return self.service.read_all(skip, limit)

@@ -5,9 +5,9 @@ Manages application settings from environment variables and .env file.
 Supports development, testing, and production environments.
 """
 
-from typing import Optional
-from pydantic_settings import BaseSettings
 from pathlib import Path
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -23,8 +23,8 @@ class Settings(BaseSettings):
 
     # HTTPS/SSL Configuration
     use_https: bool = False
-    ssl_keyfile: Optional[str] = None
-    ssl_certfile: Optional[str] = None
+    ssl_keyfile: str | None = None
+    ssl_certfile: str | None = None
 
     # Database
     database_url: str = "sqlite:///app.db"
@@ -47,12 +47,12 @@ class Settings(BaseSettings):
 
 
 # Global settings instance
-_settings: Optional[Settings] = None
+_settings: Settings | None = None
 
 
 def get_settings() -> Settings:
     """Get or create global settings instance.
-    
+
     Returns:
         Application settings
     """
@@ -64,7 +64,7 @@ def get_settings() -> Settings:
 
 def reload_settings() -> Settings:
     """Reload settings from environment/file.
-    
+
     Returns:
         Reloaded application settings
     """
@@ -73,13 +73,13 @@ def reload_settings() -> Settings:
     return _settings
 
 
-def get_setting(key: str, default: Optional[str] = None) -> Optional[str]:
+def get_setting(key: str, default: str | None = None) -> str | None:
     """Get a specific setting value.
-    
+
     Args:
         key: Setting key name
         default: Default value if not found
-        
+
     Returns:
         Setting value or default
     """
@@ -89,7 +89,7 @@ def get_setting(key: str, default: Optional[str] = None) -> Optional[str]:
 
 def is_development() -> bool:
     """Check if running in development mode.
-    
+
     Returns:
         True if environment is development
     """
@@ -98,7 +98,7 @@ def is_development() -> bool:
 
 def is_production() -> bool:
     """Check if running in production mode.
-    
+
     Returns:
         True if environment is production
     """
@@ -107,7 +107,7 @@ def is_production() -> bool:
 
 def is_testing() -> bool:
     """Check if running in testing mode.
-    
+
     Returns:
         True if environment is testing
     """
@@ -116,18 +116,18 @@ def is_testing() -> bool:
 
 def should_use_https() -> bool:
     """Check if HTTPS should be used.
-    
+
     Returns:
         True if certificate files exist
     """
     settings = get_settings()
-    
+
     # Check if certificate files exist
     if settings.ssl_keyfile and settings.ssl_certfile:
         key_exists = Path(settings.ssl_keyfile).exists()
         cert_exists = Path(settings.ssl_certfile).exists()
         return key_exists and cert_exists
-    
+
     return False
 
 

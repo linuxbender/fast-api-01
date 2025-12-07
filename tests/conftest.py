@@ -1,6 +1,5 @@
 """Pytest configuration and fixtures"""
 
-import pytest
 
 # Uncomment when FastAPI app is created
 # from fastapi.testclient import TestClient

@@ -1,15 +1,16 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, FastAPI
 from sqlmodel import Session
-from app.data.database import engine, get_session
-from app.data.v1.model.post import Post
-from app.data.v1.post_repository import PostRepository
-from app.service.v1.post_service import PostService
-from app.controller.v1.post_controller import PostController
-from app.security.cors_config import setup_cors
-from app.config.logger import setup_logging, get_logger
+
 from app.config.correlation_id_middleware import CorrelationIdMiddleware
+from app.config.logger import get_logger, setup_logging
 from app.config.routes import get_route_config
 from app.config.settings import get_settings
+from app.controller.v1.post_controller import PostController
+from app.data.database import engine
+from app.data.v1.model.post import Post
+from app.data.v1.post_repository import PostRepository
+from app.security.cors_config import setup_cors
+from app.service.v1.post_service import PostService
 
 # Setup logging with correlation ID support
 setup_logging()
@@ -29,7 +30,10 @@ def create_db_and_tables():
 # Initialize FastAPI app
 app = FastAPI(
     title="Generic CRUD API",
-    description="FastAPI with generic CRUD operations using Repository, Service, and Controller pattern",
+    description=(
+        "FastAPI with generic CRUD operations using Repository, "
+        "Service, and Controller pattern"
+    ),
     version="1.0.0",
 )
 
@@ -60,19 +64,19 @@ def setup_posts_router() -> APIRouter:
     # Get route configuration from central config
     route_config = get_route_config("posts")
     logger.debug(f"Setting up posts router with prefix: {route_config.prefix}")
-    
+
     # Create router with centralized configuration
     router = APIRouter(prefix=route_config.prefix, tags=route_config.tags)
-    
+
     # Create service and controller
     session = Session(engine)
     repository = PostRepository(session)
     service = PostService(repository)
-    
+
     # Initialize controller which registers routes
     PostController(router, service)
     logger.debug("Posts router setup completed")
-    
+
     return router
 
 
