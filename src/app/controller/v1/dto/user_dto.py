@@ -114,3 +114,23 @@ class MeResponseDto(BaseModel):
     state: str
     rights: list[str]
     groups: list[str]
+
+
+class LoginCodeRequestDto(BaseModel):
+    """DTO for passwordless login code request."""
+
+    email: EmailStr
+
+
+class LoginCodeVerifyDto(BaseModel):
+    """DTO for login code verification."""
+
+    email: EmailStr
+    code: str
+
+
+class LoginCodeResponseDto(BaseModel):
+    """DTO for login code response."""
+
+    message: str
+    expires_in_minutes: int

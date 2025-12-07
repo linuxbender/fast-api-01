@@ -7,7 +7,11 @@ from sqlmodel import Session
 
 from app.config.auth_dependencies import get_current_user
 from app.config.logger import get_logger
+from app.config.settings import get_settings
 from app.controller.v1.dto.user_dto import (
+    LoginCodeRequestDto,
+    LoginCodeResponseDto,
+    LoginCodeVerifyDto,
     LoginRequestDto,
     LoginResponseDto,
     MeResponseDto,
@@ -15,8 +19,11 @@ from app.controller.v1.dto.user_dto import (
     UserResponseDto,
 )
 from app.data.database import get_session
+from app.data.v1.login_code_repository import LoginCodeRepository
 from app.data.v1.user_repository import UserRepository
 from app.security.jwt import TokenData, create_access_token
+from app.service.mail_service import MailService
+from app.service.v1.login_code_service import LoginCodeService
 from app.service.v1.user_service import UserService
 
 logger = get_logger(__name__)
@@ -32,6 +39,7 @@ class LoginController:
             router: FastAPI router instance
         """
         self.router = router
+        self.settings = get_settings()
         self.register_routes()
 
     def register_routes(self) -> None:
@@ -255,3 +263,146 @@ class LoginController:
 
             return {"message": "Successfully logged out"}
 
+        @self.router.post(
+            "/passwordless-login",
+            response_model=LoginCodeResponseDto,
+            status_code=status.HTTP_200_OK,
+            summary="Passwordless Login",
+            description="Request passwordless login with code sent to email",
+        )
+        async def passwordless_login(
+            request: LoginCodeRequestDto,
+            session: Session = Depends(get_session),  # noqa: B008
+        ) -> LoginCodeResponseDto:
+            """Request passwordless login code.
+
+            Generates a 6-digit code and sends it to the user's email.
+            Code expires in 15 minutes.
+            """
+            logger.debug(f"Passwordless login requested for email: {request.email}")
+
+            try:
+                login_code_repo = LoginCodeRepository(session)
+                user_repo = UserRepository(session)
+                login_code_service = LoginCodeService(login_code_repo, user_repo)
+                mail_service = MailService()
+
+                # Create login code
+                login_code = login_code_service.create_login_code(
+                    request.email,
+                    expires_in_minutes=self.settings.login_code_expiry_minutes,
+                )
+
+                # Send email
+                await mail_service.send_login_code_email(request.email, login_code.code)
+
+                logger.info(f"Login code sent to: {request.email}")
+
+                return LoginCodeResponseDto(
+                    message=f"Login code sent to {request.email}",
+                    expires_in_minutes=self.settings.login_code_expiry_minutes,
+                )
+
+            except ValueError as e:
+                logger.warning(f"Passwordless login failed: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=str(e),
+                ) from e
+            except Exception as e:
+                logger.error(f"Passwordless login error: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to process login request",
+                ) from e
+
+        @self.router.post(
+            "/verify-login-code",
+            response_model=LoginResponseDto,
+            status_code=status.HTTP_200_OK,
+            summary="Verify Login Code",
+            description="Verify login code and get JWT token",
+        )
+        async def verify_login_code(
+            request: LoginCodeVerifyDto,
+            response: Response,
+            session: Session = Depends(get_session),  # noqa: B008
+        ) -> LoginResponseDto:
+            """Verify login code and return JWT token."""
+            logger.debug(f"Verifying login code for email: {request.email}")
+
+            try:
+                login_code_repo = LoginCodeRepository(session)
+                user_repo = UserRepository(session)
+                login_code_service = LoginCodeService(login_code_repo, user_repo)
+
+                # Verify code
+                user_info = login_code_service.verify_login_code(request.email, request.code)
+
+                if not user_info:
+                    logger.warning(f"Invalid or expired code for email: {request.email}")
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Invalid or expired login code",
+                    )
+
+                # Get full user data
+                user = user_repo.get_by_id(user_info["user_id"])
+                if not user:
+                    logger.error(f"User not found after code verification: {request.email}")
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="User not found",
+                    )
+
+                # Create JWT token
+                token_data = {
+                    "user_id": user.id,
+                    "email": user.email,
+                    "rights": ["READ", "EDIT"],
+                    "groups": ["ACTIVE_USER"],
+                }
+                access_token = create_access_token(
+                    data=token_data,
+                    expires_delta=timedelta(minutes=30),
+                )
+
+                # Set HTTP-Only Cookie
+                response.set_cookie(
+                    key="access_token",
+                    value=f"bearer {access_token}",
+                    httponly=True,
+                    secure=True,
+                    samesite="strict",
+                    max_age=30 * 60,
+                )
+
+                logger.info(f"User logged in with code: {request.email}")
+
+                return LoginResponseDto(
+                    access_token=access_token,
+                    token_type="bearer",
+                    user=UserResponseDto(
+                        id=user.id,
+                        name=user.name,
+                        vorname=user.vorname,
+                        display_name=user.display_name,
+                        email=user.email,
+                        state=user.state,
+                    ),
+                )
+
+            except ValueError as e:
+                logger.warning(f"Code verification failed: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=str(e),
+                ) from e
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.error(f"Code verification error: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to verify login code",
+                ) from e

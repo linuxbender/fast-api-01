@@ -49,6 +49,18 @@ class Settings(BaseSettings):
     cors_allow_methods: list[str] = Field(..., description="Allowed HTTP methods for CORS")
     cors_allow_headers: list[str] = Field(..., description="Allowed headers for CORS")
 
+    # Email Configuration (for passwordless login)
+    mail_from: str = Field(default="noreply@example.com", description="Sender email address")
+    mail_server: str = Field(default="smtp.gmail.com", description="SMTP server address")
+    mail_port: int = Field(default=587, description="SMTP server port")
+    mail_username: str = Field(default="", description="SMTP username")
+    mail_password: str = Field(default="", description="SMTP password")
+    mail_starttls: bool = Field(default=True, description="Use STARTTLS for SMTP")
+    mail_ssl: bool = Field(default=False, description="Use SSL for SMTP")
+    login_code_expiry_minutes: int = Field(
+        default=15, description="Login code expiration time in minutes"
+    )
+
 
 # Global settings instance
 _settings: Settings | None = None
