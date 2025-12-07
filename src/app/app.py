@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import APIRouter, FastAPI
 from sqlmodel import Session
 
@@ -39,6 +41,26 @@ def create_db_and_tables():
     Post.metadata.create_all(engine)
 
 
+# Lifespan context manager for startup and shutdown events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Manage application lifecycle.
+
+    Startup: Create database tables
+    Shutdown: Cleanup resources (if needed)
+    """
+    # Startup
+    logger.info("Application startup: Creating database tables")
+    create_db_and_tables()
+    logger.info("Application startup completed")
+
+    yield
+
+    # Shutdown (cleanup if needed)
+    logger.info("Application shutting down")
+
+
 # Initialize FastAPI app
 app = FastAPI(
     title="Generic CRUD API",
@@ -47,6 +69,7 @@ app = FastAPI(
         "Service, and Controller pattern"
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Add correlation ID middleware (must be added before other middlewares)
@@ -54,14 +77,6 @@ app.add_middleware(CorrelationIdMiddleware)
 
 # Setup CORS
 setup_cors(app)
-
-# Create database tables on startup
-@app.on_event("startup")
-def on_startup():
-    logger.info("Application startup: Creating database tables")
-    create_db_and_tables()
-    logger.info("Application startup completed")
-
 
 # Health check endpoint
 @app.get("/health", tags=["Health"])

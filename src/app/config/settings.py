@@ -11,7 +11,7 @@ Single Source of Truth: .env files are the source for all environment-specific c
 
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 
@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     Missing values will cause validation errors on startup.
     This ensures no duplicate configuration and enforces .env as Single Source of Truth.
     """
+
+    model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
     # Environment (REQUIRED - no default)
     environment: str = Field(..., description="Application environment (development, staging, production)")
@@ -46,13 +48,6 @@ class Settings(BaseSettings):
     cors_allow_credentials: bool = Field(..., description="Allow CORS credentials")
     cors_allow_methods: list[str] = Field(..., description="Allowed HTTP methods for CORS")
     cors_allow_headers: list[str] = Field(..., description="Allowed headers for CORS")
-
-    class Config:
-        """Pydantic settings configuration."""
-
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
 
 
 # Global settings instance

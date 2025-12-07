@@ -301,13 +301,13 @@ CORS_ALLOW_HEADERS=["*"]
             assert settings.log_level == "DEBUG"
 
     def test_settings_config_has_env_file(self):
-        """Test that Settings Config specifies env_file."""
-        assert Settings.Config.env_file == ".env"
+        """Test that Settings model_config specifies env_file."""
+        assert Settings.model_config["env_file"] == ".env"
 
     def test_settings_config_env_encoding(self):
-        """Test that Settings Config specifies UTF-8 encoding."""
-        assert Settings.Config.env_file_encoding == "utf-8"
+        """Test that Settings model_config specifies UTF-8 encoding."""
+        assert Settings.model_config["env_file_encoding"] == "utf-8"
 
     def test_settings_config_case_sensitivity(self):
-        """Test that Settings Config is case-insensitive."""
-        assert Settings.Config.case_sensitive is False
+        """Test that Settings model_config is case-insensitive."""
+        assert Settings.model_config["case_sensitive"] is False
