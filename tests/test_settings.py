@@ -7,7 +7,6 @@ Tests the environment configuration and settings management.
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from app.config.settings import (
     Settings,
     get_setting,
@@ -69,7 +68,7 @@ class TestSettings:
                     log_level="DEBUG",
                     # Missing CORS fields
                 )
-                assert False, "Should have raised ValidationError"
+                raise AssertionError("Should have raised ValidationError")
             except ValidationError as e:
                 # Should complain about missing CORS fields
                 error_fields = {error["loc"][0] for error in e.errors()}
@@ -95,7 +94,7 @@ class TestSettings:
                     cors_allow_headers=["*"],
                     # Missing log_level
                 )
-                assert False, "Should have raised ValidationError"
+                raise AssertionError("Should have raised ValidationError")
             except ValidationError as e:
                 error_fields = {error["loc"][0] for error in e.errors()}
                 assert "log_level" in error_fields
