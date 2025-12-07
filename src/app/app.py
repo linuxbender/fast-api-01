@@ -8,9 +8,11 @@ from app.config.logger import get_logger, setup_logging
 from app.config.routes import get_route_config
 from app.config.settings import get_settings, has_ssl_certificates
 from app.config.ssl_generator import SSLCertificateGenerator
+from app.controller.v1.login_controller import LoginController
 from app.controller.v1.post_controller import PostController
 from app.data.database import engine
 from app.data.v1.model.post import Post
+from app.data.v1.model.user import User
 from app.data.v1.post_repository import PostRepository
 from app.security.cors_config import setup_cors
 from app.service.v1.post_service import PostService
@@ -39,6 +41,7 @@ logger.debug("HTTPS enabled (required for all environments)")
 def create_db_and_tables():
     """Create all database tables."""
     Post.metadata.create_all(engine)
+    User.metadata.create_all(engine)
 
 
 # Lifespan context manager for startup and shutdown events
@@ -109,6 +112,25 @@ def setup_posts_router() -> APIRouter:
 
 # Include routers
 app.include_router(setup_posts_router())
+
+
+# Setup Login routes
+def setup_login_router() -> APIRouter:
+    """Create and configure the login router."""
+    route_config = get_route_config("auth")
+    logger.debug(f"Setting up auth router with prefix: {route_config.prefix}")
+
+    router = APIRouter(prefix=route_config.prefix, tags=route_config.tags)
+
+    # Initialize login controller which registers routes
+    LoginController(router)
+    logger.debug("Auth router setup completed")
+
+    return router
+
+
+# Include auth router
+app.include_router(setup_login_router())
 
 
 # Home endpoint

@@ -1,11 +1,13 @@
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.config.auth_dependencies import get_current_user
 from app.config.logger import get_logger
 from app.config.routes import get_route_config
 from app.controller.v1.base_controller import BaseController
 from app.controller.v1.dto.post_dto import PostDto
 from app.data.v1.model.post import Post
+from app.security.jwt import TokenData
 from app.service.v1.post_service import PostService
 
 logger = get_logger(__name__)
@@ -44,11 +46,14 @@ class PostController(BaseController[Post, PostDto]):
             status_code=status.HTTP_201_CREATED,
             tags=tags,
             summary="Create Post",
-            description="Create a new post",
+            description="Create a new post (requires authentication)",
         )
-        async def create_post(dto: PostDto) -> PostDto:
-            """Create a new post."""
-            logger.debug(f"Creating post: {dto.title}")
+        async def create_post(
+            dto: PostDto,
+            current_user: TokenData = Depends(get_current_user),  # noqa: B008
+        ) -> PostDto:
+            """Create a new post (requires authentication)."""
+            logger.debug(f"Creating post: {dto.title} by user {current_user.user_id}")
             return self.service.create(dto)
 
         @self.router.get(
@@ -56,7 +61,7 @@ class PostController(BaseController[Post, PostDto]):
             response_model=PostDto,
             tags=tags,
             summary="Read Post",
-            description="Retrieve a post by ID",
+            description="Retrieve a post by ID (no authentication required)",
         )
         async def read_post(id: int) -> PostDto:
             """Read a post by ID."""
@@ -75,7 +80,7 @@ class PostController(BaseController[Post, PostDto]):
             response_model=list[PostDto],
             tags=tags,
             summary="Read All Posts",
-            description="Retrieve all posts with pagination",
+            description="Retrieve all posts with pagination (no authentication required)",
         )
         async def read_all_posts(skip: int = 0, limit: int = 100) -> list[PostDto]:
             """Read all posts with pagination."""
@@ -87,11 +92,15 @@ class PostController(BaseController[Post, PostDto]):
             response_model=PostDto,
             tags=tags,
             summary="Update Post",
-            description="Update an existing post",
+            description="Update an existing post (requires authentication)",
         )
-        async def update_post(id: int, dto: PostDto) -> PostDto:
-            """Update a post."""
-            logger.debug(f"Updating post with ID: {id}")
+        async def update_post(
+            id: int,
+            dto: PostDto,
+            current_user: TokenData = Depends(get_current_user),  # noqa: B008
+        ) -> PostDto:
+            """Update a post (requires authentication)."""
+            logger.debug(f"Updating post with ID: {id} by user {current_user.user_id}")
             entity = self.service.update(id, dto)
             if entity is None:
                 logger.warning(f"Post not found with ID: {id}")
@@ -106,11 +115,14 @@ class PostController(BaseController[Post, PostDto]):
             status_code=status.HTTP_204_NO_CONTENT,
             tags=tags,
             summary="Delete Post",
-            description="Delete a post",
+            description="Delete a post (requires authentication)",
         )
-        async def delete_post(id: int) -> None:
-            """Delete a post."""
-            logger.debug(f"Deleting post with ID: {id}")
+        async def delete_post(
+            id: int,
+            current_user: TokenData = Depends(get_current_user),  # noqa: B008
+        ) -> None:
+            """Delete a post (requires authentication)."""
+            logger.debug(f"Deleting post with ID: {id} by user {current_user.user_id}")
             success = self.service.delete(id)
             if not success:
                 logger.warning(f"Post not found with ID: {id}")

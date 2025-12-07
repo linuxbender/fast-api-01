@@ -28,6 +28,11 @@ ROUTES = {
         tags=["Posts"],
         description="Post management endpoints",
     ),
+    "auth": RouteConfig(
+        prefix=f"{API_BASE_PREFIX}/auth",
+        tags=["Auth"],
+        description="Authentication endpoints",
+    ),
     # Add more routes as needed:
     # "users": RouteConfig(
     #     prefix=f"{API_BASE_PREFIX}/user",
