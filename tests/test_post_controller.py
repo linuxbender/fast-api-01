@@ -12,7 +12,7 @@ from app.controller.v1.dto.post_dto import PostDto
 from app.controller.v1.post_controller import PostController
 from app.data.v1.model.post import Post, PostState
 from app.service.v1.post_service import PostService
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 
 @pytest.fixture

@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False)
 
     # Environment (REQUIRED - no default)
-    environment: str = Field(..., description="Application environment (development, staging, production)")
+    environment: str = Field(..., description="Application Env (development, staging, production)")
 
     # Server Configuration (practical defaults for local development)
     server_host: str = Field(default="0.0.0.0", description="Server host address")

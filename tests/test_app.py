@@ -5,7 +5,6 @@ Tests the app setup, middleware configuration, and route registration
 in isolation using mocks where appropriate.
 """
 
-import pytest
 from app.app import app
 from app.config.settings import Settings
 
@@ -147,7 +146,7 @@ class TestAppOpenAPISchema:
             schema = app.openapi()
             assert schema is not None
             assert "paths" in schema or schema == {}  # Schema might be lazy-loaded
-        except Exception as e:
+        except Exception:
             # Schema generation might fail in isolated test, that's OK
             pass
 
