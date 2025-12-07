@@ -1,21 +1,21 @@
-"""Unit tests for app.config.dependencies module."""
+"""Unit tests for app.data.database module - session dependency."""
 
-from app.config.dependencies import get_db_session
+from app.data.database import get_session
 from sqlmodel import Session
 
 
-class TestGetDbSession:
-    """Tests for get_db_session dependency."""
+class TestGetSession:
+    """Tests for get_session dependency."""
 
-    def test_get_db_session_returns_generator(self):
-        """Test that get_db_session returns a generator."""
-        session_gen = get_db_session()
+    def test_get_session_returns_generator(self):
+        """Test that get_session returns a generator."""
+        session_gen = get_session()
         assert hasattr(session_gen, "__iter__")
         assert hasattr(session_gen, "__next__")
 
-    def test_get_db_session_yields_session(self):
-        """Test that get_db_session yields a Session object."""
-        session_gen = get_db_session()
+    def test_get_session_yields_session(self):
+        """Test that get_session yields a Session object."""
+        session_gen = get_session()
         session = next(session_gen)
         assert isinstance(session, Session)
         # Clean up
@@ -24,9 +24,9 @@ class TestGetDbSession:
         except StopIteration:
             pass
 
-    def test_get_db_session_yields_valid_session(self):
+    def test_get_session_yields_valid_session(self):
         """Test that yielded session is properly initialized."""
-        session_gen = get_db_session()
+        session_gen = get_session()
         session = next(session_gen)
         assert session is not None
         # Session should be usable
@@ -38,9 +38,9 @@ class TestGetDbSession:
         except StopIteration:
             pass
 
-    def test_get_db_session_cleanup(self):
-        """Test that get_db_session properly cleans up resources."""
-        session_gen = get_db_session()
+    def test_get_session_cleanup(self):
+        """Test that get_session properly cleans up resources."""
+        session_gen = get_session()
         next(session_gen)
 
         # Finish the generator to trigger cleanup
@@ -51,13 +51,13 @@ class TestGetDbSession:
         # If we got here, cleanup executed without error
 
 
-class TestDependenciesIntegration:
-    """Integration tests for dependencies."""
+class TestSessionIntegration:
+    """Integration tests for database session dependency."""
 
-    def test_get_db_session_can_be_used_multiple_times(self):
-        """Test that get_db_session can be called multiple times."""
-        gen1 = get_db_session()
-        gen2 = get_db_session()
+    def test_get_session_can_be_used_multiple_times(self):
+        """Test that get_session can be called multiple times."""
+        gen1 = get_session()
+        gen2 = get_session()
 
         session1 = next(gen1)
         session2 = next(gen2)
@@ -75,10 +75,10 @@ class TestDependenciesIntegration:
             except StopIteration:
                 pass
 
-    def test_get_db_session_with_context_manager(self):
+    def test_get_session_with_context_manager(self):
         """Test that database session works in dependency injection context."""
         # Simulating FastAPI's dependency injection cleanup
-        session_gen = get_db_session()
+        session_gen = get_session()
         try:
             session = next(session_gen)
             assert session is not None

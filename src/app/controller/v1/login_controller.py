@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session
 
 from app.config.auth_dependencies import get_current_user
-from app.config.dependencies import get_db_session
 from app.config.logger import get_logger
 from app.controller.v1.dto.user_dto import (
     LoginRequestDto,
@@ -15,6 +14,7 @@ from app.controller.v1.dto.user_dto import (
     UserCreateDto,
     UserResponseDto,
 )
+from app.data.database import get_session
 from app.data.v1.user_repository import UserRepository
 from app.security.jwt import TokenData, create_access_token
 from app.service.v1.user_service import UserService
@@ -47,7 +47,7 @@ class LoginController:
         async def login(
             request: LoginRequestDto,
             response: Response,
-            session: Session = Depends(get_db_session),  # noqa: B008
+            session: Session = Depends(get_session),  # noqa: B008
         ) -> LoginResponseDto:
             """Login with email and password."""
             logger.debug(f"Login attempt for email: {request.email}")
@@ -104,7 +104,7 @@ class LoginController:
         )
         async def register(
             request: UserCreateDto,
-            session: Session = Depends(get_db_session),  # noqa: B008
+            session: Session = Depends(get_session),  # noqa: B008
         ) -> UserResponseDto:
             """Register a new user."""
             logger.debug(f"Registration attempt for email: {request.email}")
@@ -133,7 +133,7 @@ class LoginController:
             user_id: int,
             new_password: str,
             current_user: TokenData = Depends(get_current_user),  # noqa: B008
-            session: Session = Depends(get_db_session),  # noqa: B008
+            session: Session = Depends(get_session),  # noqa: B008
         ) -> UserResponseDto:
             """Reset password for a user."""
             # Only allow users to reset their own password
@@ -171,7 +171,7 @@ class LoginController:
         async def deactivate(
             user_id: int,
             current_user: TokenData = Depends(get_current_user),  # noqa: B008
-            session: Session = Depends(get_db_session),  # noqa: B008
+            session: Session = Depends(get_session),  # noqa: B008
         ) -> UserResponseDto:
             """Deactivate user profile."""
             # Only allow users to deactivate their own account
@@ -208,7 +208,7 @@ class LoginController:
         )
         async def me(
             current_user: TokenData = Depends(get_current_user),  # noqa: B008
-            session: Session = Depends(get_db_session),  # noqa: B008
+            session: Session = Depends(get_session),  # noqa: B008
         ) -> MeResponseDto:
             """Get current user information and rights."""
             user_repo = UserRepository(session)

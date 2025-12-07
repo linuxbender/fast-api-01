@@ -116,7 +116,7 @@ class TestLoginControllerLogout:
         )
 
         # Mock dependencies
-        mocker.patch("app.controller.v1.login_controller.get_db_session")
+        mocker.patch("app.controller.v1.login_controller.get_session")
         mocker.patch("app.controller.v1.login_controller.get_current_user")
 
         # Act

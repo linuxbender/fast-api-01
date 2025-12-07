@@ -4,7 +4,7 @@ Unit tests for app configuration and initialization.
 Tests critical app setup, route registration, and middleware configuration.
 """
 
-from app.app import app
+from app.app import app as fastapi_app
 from app.config.settings import Settings
 
 
@@ -15,11 +15,11 @@ class TestAppInitialization:
         """Test that app is a FastAPI instance."""
         from fastapi import FastAPI
 
-        assert isinstance(app, FastAPI)
+        assert isinstance(fastapi_app, FastAPI)
 
     def test_app_has_correct_title_content(self):
         """Test that app has correct title."""
-        assert "Generic CRUD API" in app.title or "API" in app.title
+        assert "Generic CRUD API" in fastapi_app.title or "API" in fastapi_app.title
 
 
 class TestAppCriticalRoutes:
@@ -27,24 +27,24 @@ class TestAppCriticalRoutes:
 
     def test_app_has_health_route(self):
         """Test that app has health check route."""
-        routes = [route.path for route in app.routes]
+        routes = [route.path for route in fastapi_app.routes]
         assert "/health" in routes
 
     def test_app_has_post_routes(self):
         """Test that app has post routes registered."""
-        routes = [route.path for route in app.routes]
+        routes = [route.path for route in fastapi_app.routes]
         post_routes = [r for r in routes if "post" in r.lower()]
         assert len(post_routes) > 0
 
     def test_app_has_auth_routes(self):
         """Test that auth routes are registered."""
-        routes = [route.path for route in app.routes]
+        routes = [route.path for route in fastapi_app.routes]
         auth_routes = [r for r in routes if "auth" in r.lower()]
         assert len(auth_routes) > 0
 
     def test_login_endpoint_registered(self):
         """Test that login endpoint is registered."""
-        routes = [route.path for route in app.routes]
+        routes = [route.path for route in fastapi_app.routes]
         assert any("login" in r.lower() for r in routes)
 
 
@@ -59,8 +59,8 @@ class TestAppMiddlewareConfiguration:
 
     def test_app_has_middleware_stack(self):
         """Test that app has middleware configured."""
-        assert hasattr(app, "user_middleware")
-        assert len(app.user_middleware) > 0
+        assert hasattr(fastapi_app, "user_middleware")
+        assert len(fastapi_app.user_middleware) > 0
 
 
 class TestAppConfiguration:
