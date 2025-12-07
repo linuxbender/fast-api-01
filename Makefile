@@ -80,7 +80,7 @@ test:
 
 # Run tests with coverage report
 test-cov:
-	uv run pytest --cov=fastapi_01 --cov-report=html --cov-report=term-missing
+	uv run pytest --cov=app --cov-report=html --cov-report=term-missing
 
 # Run linter (ruff)
 lint:
