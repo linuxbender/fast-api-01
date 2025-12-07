@@ -30,6 +30,10 @@ jobs:
       run: uv sync --all-groups
       shell: bash
 
+    - name: Create .env file from .env.example
+      run: cp .env.example .env
+      shell: bash
+
     - name: Lint with ruff
       run: uv run ruff check . || true
       shell: bash
