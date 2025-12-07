@@ -45,15 +45,6 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
         case_sensitive = False
 
-        @classmethod
-        def settings_customise_sources(cls, settings_cls, init_settings, env_settings, file_settings, ignore_extra):
-            """Customize settings source priority."""
-            return (
-                init_settings,
-                env_settings,
-                file_settings,
-            )
-
 
 # Global settings instance
 _settings: Optional[Settings] = None
@@ -127,11 +118,9 @@ def should_use_https() -> bool:
     """Check if HTTPS should be used.
     
     Returns:
-        True if USE_HTTPS is enabled and certificate files exist
+        True if certificate files exist
     """
     settings = get_settings()
-    if not settings.use_https:
-        return False
     
     # Check if certificate files exist
     if settings.ssl_keyfile and settings.ssl_certfile:
