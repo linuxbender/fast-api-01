@@ -83,8 +83,8 @@ SERVER_HOST=0.0.0.0
 SERVER_PORT=8000
 SERVER_RELOAD=true
 
-# HTTPS/SSL Configuration
-USE_HTTPS=false
+# HTTPS/SSL Configuration (Required for all environments)
+# Self-signed certificates are auto-generated if not present
 SSL_KEYFILE=./certs/private.key
 SSL_CERTFILE=./certs/certificate.crt
 
@@ -92,10 +92,10 @@ SSL_CERTFILE=./certs/certificate.crt
 DATABASE_URL=sqlite:///app.db
 
 # Logging
-LOG_LEVEL=INFO
+LOG_LEVEL=DEBUG
 
 # CORS Configuration
-CORS_ORIGINS=["http://localhost:3000","http://localhost:8000","http://127.0.0.1:8000"]
+CORS_ORIGINS=["https://localhost:3000","https://localhost:8000","https://127.0.0.1:8000"]
 CORS_ALLOW_CREDENTIALS=true
 CORS_ALLOW_METHODS=["GET","POST","PUT","DELETE","OPTIONS"]
 CORS_ALLOW_HEADERS=["*"]
@@ -147,24 +147,28 @@ def print_next_steps():
     """Print next steps."""
     print_header("Next Steps")
     print("""
-To start the development server with HTTPS support:
+HTTPS is now required for all environments.
+SSL certificates are auto-generated on first run.
 
-1. Enable HTTPS in .env:
-   USE_HTTPS=true
+To start the development server:
 
-2. Start the server:
+   uv run python run.py
+
+Or use uvicorn directly:
    uv run uvicorn app.app:app --reload \\
        --ssl-keyfile=./certs/private.key \\
        --ssl-certfile=./certs/certificate.crt
 
-Or simply start with HTTP (default):
-   uv run uvicorn app.app:app --reload
-
 To view the API documentation:
-   http://localhost:8000/docs
+   https://localhost:8000/docs
 
-For Firefox/Chrome, you may need to accept the self-signed certificate:
-   https://localhost:8000 (if HTTPS is enabled)
+For Firefox/Chrome, you may need to accept the self-signed certificate.
+Just navigate to https://localhost:8000 and click "Advanced" → "Proceed".
+
+For production deployments:
+   - Copy appropriate .env.production to .env
+   - Replace ./certs/private.key and ./certs/certificate.crt with real certificates
+   - Deploy to your server
 """)
 
 

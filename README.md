@@ -1,6 +1,6 @@
 # FastAPI 01
 
-A modern, production-ready FastAPI project with generic CRUD operations, centralized routing, global logging with correlation IDs, and HTTPS support for local development.
+A modern, production-ready FastAPI project with generic CRUD operations, centralized routing, global logging with correlation IDs, and mandatory HTTPS/TLS support for all environments.
 
 ## ✨ Features
 
@@ -18,11 +18,12 @@ A modern, production-ready FastAPI project with generic CRUD operations, central
 - ✅ **Dependency Injection** - Clean service and repository injection
 
 ### Development & Operations
+- ✅ **Mandatory HTTPS/TLS** - Required for all environments (dev, staging, production)
+- ✅ **Auto-Generated SSL Certificates** - Self-signed certificates auto-generated in development
 - ✅ **Global Logging** - Structured logging with correlation IDs
 - ✅ **Request Tracking** - Automatic correlation ID tracking across async contexts
-- ✅ **Self-Signed SSL Certificates** - HTTPS for local development
-- ✅ **Environment Configuration** - .env based settings management
-- ✅ **CORS Support** - Configurable CORS middleware
+- ✅ **Environment Configuration** - .env based settings management with templates
+- ✅ **CORS Support** - Configurable CORS middleware with HTTPS by default
 
 ### Testing & Quality
 - ✅ **Comprehensive Test Suite** - 110+ tests with 100% pass rate
@@ -53,14 +54,17 @@ make install
 uv sync
 ```
 
-3. Setup development environment (SSL certificates, .env):
+3. Install dependencies (SSL certificates auto-generated on first run):
 ```bash
-make setup-ssl
+make install
+uv sync
 ```
 
 ## Running the Application
 
-### HTTP (Default)
+**All connections use HTTPS/TLS. Self-signed certificates are auto-generated on first run.**
+
+### Quick Start
 
 ```bash
 make run
@@ -68,18 +72,10 @@ make run
 uv run python run.py
 ```
 
-→ http://localhost:8000
+→ **https://localhost:8000**
 
-### HTTPS (with Self-Signed Certificate)
-
-```bash
-make run-https
-# or
-uv run python run.py --https
-```
-
-→ https://localhost:8000  
-(Browser will warn about self-signed certificate - this is normal for development)
+**Note**: Browser will warn about self-signed certificate - this is normal for development.
+Click "Advanced" → "Proceed" to access the application.
 
 ### Custom Configuration
 
@@ -87,54 +83,76 @@ uv run python run.py --https
 # Custom port
 uv run python run.py --port 9000
 
-# Custom host
+# Custom host (default: 0.0.0.0)
 uv run python run.py --host 127.0.0.1
 
-# Without auto-reload
+# Without auto-reload (for production-like testing)
 uv run python run.py --no-reload
 
-# Multiple workers
+# Multiple worker processes
 uv run python run.py --workers 4
+```
+
+### Environment-Specific Deployment
+
+```bash
+# Development (debug logging, auto-reload, SQLite)
+cp .env.development .env
+uv run python run.py
+
+# Staging (info logging, PostgreSQL, real certificates)
+cp .env.staging .env
+# Then place real certificates at ./certs/certificate.crt and ./certs/private.key
+uv run python run.py
+
+# Production (warning logging, PostgreSQL, real certificates)
+cp .env.production .env
+# Then place real certificates from CA at ./certs/certificate.crt and ./certs/private.key
+uv run python run.py
 ```
 
 ## API Documentation
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
+- **Swagger UI**: https://localhost:8000/docs
+- **ReDoc**: https://localhost:8000/redoc
+- **OpenAPI JSON**: https://localhost:8000/openapi.json
+
+(Accept the self-signed certificate warning to access these endpoints in development)
 
 ## Testing
 
-Comprehensive test suite with **110 tests** (100% pass rate):
+Comprehensive test suite with **154 tests** (100% pass rate):
 
 ```bash
 # Run all tests
-make test-all
+make test
 # or
 uv run pytest -v
 
 # Run with coverage report
 make test-coverage
 # or
-uv run pytest --cov=src/app --cov-report=html --cov-report=term
+uv run pytest --cov=fastapi_01 --cov-report=html --cov-report=term
 
 # Run specific test file
-uv run pytest tests/test_base_repository.py -v
+uv run pytest tests/test_post_controller.py -v
 
 # Run tests matching pattern
 uv run pytest -k "test_crud" -v
 ```
 
-### Test Files
+### Test Coverage
 
-| File | Tests | Coverage |
-|------|-------|----------|
-| `test_base_repository.py` | 9 | CRUD operations |
-| `test_base_service.py` | 8 | Service layer & DTO mapping |
-| `test_settings.py` | 21 | Configuration & environment |
-| `test_routes.py` | 39 | Route configuration system |
-| `test_logger.py` | 25 | Logging & correlation IDs |
-| **Total** | **110** | **100% passing** |
+| Category | Tests | Module |
+|----------|-------|--------|
+| HTTP Controllers | 32 | `test_post_controller.py` |
+| App Integration | 14 | `test_app.py` |
+| Settings & Config | 42 | `test_settings.py` |
+| Repository (CRUD) | 9 | `test_base_repository.py` |
+| Service Layer | 8 | `test_base_service.py` |
+| Routes | 39 | `test_routes.py` |
+| Logging | 10 | `test_logger.py` |
+| **Total** | **154** | **100% passing** |
 
 ## Development Commands
 
@@ -143,9 +161,8 @@ All commands are available via Makefile or uv directly:
 ### Server Management
 
 ```bash
-make run              # Start development server (HTTP)
-make run-https        # Start with HTTPS (requires setup-ssl)
-make setup-ssl        # Generate self-signed certificates
+make run              # Start development server (HTTPS)
+make install          # Install dependencies
 ```
 
 ### Testing

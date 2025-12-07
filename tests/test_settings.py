@@ -6,64 +6,112 @@ Tests the environment configuration and settings management.
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from app.config.settings import (
     Settings,
     get_setting,
     get_settings,
+    has_ssl_certificates,
     is_development,
     is_production,
     is_testing,
     reload_settings,
-    should_use_https,
 )
 
 
 class TestSettings:
     """Test Settings class and configuration loading."""
 
-    def test_settings_default_values(self):
-        """Test that Settings has correct default values."""
-        settings = Settings()
+    def test_settings_with_all_required_values(self):
+        """Test that Settings requires all CORS, SSL, and LOG_LEVEL values."""
+        # Create settings with all required fields explicitly provided
+        settings = Settings(
+            _env_file=None,
+            environment="development",
+            server_host="0.0.0.0",
+            server_port=8000,
+            server_reload=True,
+            ssl_keyfile="./certs/private.key",
+            ssl_certfile="./certs/certificate.crt",
+            database_url="sqlite:///app.db",
+            log_level="INFO",
+            cors_origins=["https://localhost:3000", "https://localhost:8000"],
+            cors_allow_credentials=True,
+            cors_allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            cors_allow_headers=["*"],
+        )
 
         assert settings.environment == "development"
         assert settings.server_host == "0.0.0.0"
         assert settings.server_port == 8000
         assert settings.server_reload is True
-        assert settings.use_https is False
-        # ssl_keyfile and ssl_certfile are loaded from .env if it exists
-        assert isinstance(settings.ssl_keyfile, str | type(None))
-        assert isinstance(settings.ssl_certfile, str | type(None))
+        # SSL/TLS is required for all environments
+        assert settings.ssl_keyfile == "./certs/private.key"
+        assert settings.ssl_certfile == "./certs/certificate.crt"
         assert settings.database_url == "sqlite:///app.db"
         assert settings.log_level == "INFO"
+        # CORS is required
+        assert "https://localhost:3000" in settings.cors_origins
+        assert "https://localhost:8000" in settings.cors_origins
 
-    def test_settings_with_custom_values(self):
-        """Test Settings with custom environment values."""
-        settings = Settings(
-            environment="production",
-            server_port=9000,
-            use_https=True,
-            log_level="DEBUG",
-        )
+    def test_settings_missing_required_cors_origins_raises_error(self):
+        """Test that Settings raises ValidationError when CORS origins are missing."""
+        from pydantic import ValidationError
 
-        assert settings.environment == "production"
-        assert settings.server_port == 9000
-        assert settings.use_https is True
-        assert settings.log_level == "DEBUG"
+        with patch.dict("os.environ", {}, clear=True):
+            try:
+                Settings(
+                    _env_file=None,
+                    environment="production",
+                    ssl_keyfile="./certs/private.key",
+                    ssl_certfile="./certs/certificate.crt",
+                    log_level="DEBUG",
+                    # Missing CORS fields
+                )
+                assert False, "Should have raised ValidationError"
+            except ValidationError as e:
+                # Should complain about missing CORS fields
+                error_fields = {error["loc"][0] for error in e.errors()}
+                assert "cors_origins" in error_fields
+                assert "cors_allow_credentials" in error_fields
+                assert "cors_allow_methods" in error_fields
+                assert "cors_allow_headers" in error_fields
 
-    def test_settings_cors_defaults(self):
-        """Test CORS configuration defaults."""
-        settings = Settings()
+    def test_settings_missing_required_log_level_raises_error(self):
+        """Test that Settings raises ValidationError when LOG_LEVEL is missing."""
+        from pydantic import ValidationError
 
-        assert "http://localhost:3000" in settings.cors_origins
-        assert "http://localhost:8000" in settings.cors_origins
-        assert settings.cors_allow_credentials is True
-        assert "GET" in settings.cors_allow_methods
-        assert "POST" in settings.cors_allow_methods
-        assert "*" in settings.cors_allow_headers
+        with patch.dict("os.environ", {}, clear=True):
+            try:
+                Settings(
+                    _env_file=None,
+                    environment="production",
+                    ssl_keyfile="./certs/private.key",
+                    ssl_certfile="./certs/certificate.crt",
+                    cors_origins=["https://example.com"],
+                    cors_allow_credentials=True,
+                    cors_allow_methods=["GET"],
+                    cors_allow_headers=["*"],
+                    # Missing log_level
+                )
+                assert False, "Should have raised ValidationError"
+            except ValidationError as e:
+                error_fields = {error["loc"][0] for error in e.errors()}
+                assert "log_level" in error_fields
 
     def test_settings_case_insensitive(self):
         """Test that settings are case-insensitive."""
-        settings = Settings(environment="PRODUCTION")
+        settings = Settings(
+            environment="PRODUCTION",
+            ssl_keyfile="./certs/private.key",
+            ssl_certfile="./certs/certificate.crt",
+            log_level="DEBUG",
+            cors_origins=["https://example.com"],
+            cors_allow_credentials=True,
+            cors_allow_methods=["GET"],
+            cors_allow_headers=["*"],
+        )
         assert settings.environment == "PRODUCTION"
 
 
@@ -157,11 +205,11 @@ class TestEnvironmentCheckers:
             assert is_development() is True
 
 
-class TestShouldUseHttps:
-    """Test HTTPS configuration checking."""
+class TestSSLCertificates:
+    """Test SSL certificate configuration checking."""
 
-    def test_should_use_https_with_existing_certificates(self, tmp_path):
-        """Test should_use_https when certificate files exist."""
+    def test_has_ssl_certificates_with_existing_certificates(self, tmp_path):
+        """Test has_ssl_certificates when certificate files exist."""
         # Create temporary certificate files
         key_file = tmp_path / "private.key"
         cert_file = tmp_path / "certificate.crt"
@@ -174,10 +222,10 @@ class TestShouldUseHttps:
             settings_mock.ssl_certfile = str(cert_file)
             mock_get.return_value = settings_mock
 
-            assert should_use_https() is True
+            assert has_ssl_certificates() is True
 
-    def test_should_use_https_with_missing_key_file(self, tmp_path):
-        """Test should_use_https when key file is missing."""
+    def test_has_ssl_certificates_with_missing_key_file(self, tmp_path):
+        """Test has_ssl_certificates when key file is missing."""
         cert_file = tmp_path / "certificate.crt"
         cert_file.write_text("cert content")
         key_file = tmp_path / "missing.key"
@@ -188,10 +236,10 @@ class TestShouldUseHttps:
             settings_mock.ssl_certfile = str(cert_file)
             mock_get.return_value = settings_mock
 
-            assert should_use_https() is False
+            assert has_ssl_certificates() is False
 
-    def test_should_use_https_with_missing_cert_file(self, tmp_path):
-        """Test should_use_https when cert file is missing."""
+    def test_has_ssl_certificates_with_missing_cert_file(self, tmp_path):
+        """Test has_ssl_certificates when cert file is missing."""
         key_file = tmp_path / "private.key"
         key_file.write_text("key content")
         cert_file = tmp_path / "missing.crt"
@@ -202,48 +250,55 @@ class TestShouldUseHttps:
             settings_mock.ssl_certfile = str(cert_file)
             mock_get.return_value = settings_mock
 
-            assert should_use_https() is False
-
-    def test_should_use_https_with_none_paths(self):
-        """Test should_use_https when certificate paths are None."""
-        with patch("app.config.settings.get_settings") as mock_get:
-            settings_mock = MagicMock()
-            settings_mock.ssl_keyfile = None
-            settings_mock.ssl_certfile = None
-            mock_get.return_value = settings_mock
-
-            assert should_use_https() is False
-
-    def test_should_use_https_with_partial_paths(self, tmp_path):
-        """Test should_use_https when only one path is set."""
-        key_file = tmp_path / "private.key"
-        key_file.write_text("key content")
-
-        with patch("app.config.settings.get_settings") as mock_get:
-            settings_mock = MagicMock()
-            settings_mock.ssl_keyfile = str(key_file)
-            settings_mock.ssl_certfile = None
-            mock_get.return_value = settings_mock
-
-            assert should_use_https() is False
+            assert has_ssl_certificates() is False
 
 
 class TestSettingsEnvFileLoading:
     """Test loading settings from .env file."""
 
-    def test_settings_loads_from_env_file(self, tmp_path):
-        """Test that Settings loads values from .env file."""
+    def test_settings_requires_all_env_variables(self, tmp_path):
+        """Test that Settings raises error when required ENV variables are missing."""
+        from pydantic import ValidationError
+
         env_file = tmp_path / ".env"
         env_file.write_text("""
 ENVIRONMENT=production
 SERVER_PORT=9000
-USE_HTTPS=true
 LOG_LEVEL=DEBUG
+SSL_KEYFILE=./certs/private.key
+SSL_CERTFILE=./certs/certificate.crt
 """)
 
-        with patch("app.config.settings.Settings.Config.env_file", str(env_file)):
-            Settings(_env_file=str(env_file))
-            # Note: In actual usage, pydantic-settings will load these
+        # Attempting to load with incomplete .env should fail
+        with patch.dict("os.environ", {}, clear=True):
+            with pytest.raises(ValidationError) as exc_info:
+                Settings(_env_file=str(env_file))
+
+            # Should complain about missing CORS fields
+            error_fields = {error["loc"][0] for error in exc_info.value.errors()}
+            assert "cors_origins" in error_fields
+            assert "cors_allow_credentials" in error_fields
+
+    def test_settings_loads_from_complete_env_file(self, tmp_path):
+        """Test that Settings loads successfully with complete .env file."""
+        env_file = tmp_path / ".env"
+        env_file.write_text("""
+ENVIRONMENT=production
+SERVER_PORT=9000
+LOG_LEVEL=DEBUG
+SSL_KEYFILE=./certs/private.key
+SSL_CERTFILE=./certs/certificate.crt
+CORS_ORIGINS=["https://example.com"]
+CORS_ALLOW_CREDENTIALS=true
+CORS_ALLOW_METHODS=["GET","POST"]
+CORS_ALLOW_HEADERS=["*"]
+""")
+
+        with patch.dict("os.environ", {}, clear=True):
+            settings = Settings(_env_file=str(env_file))
+            assert settings.environment == "production"
+            assert settings.server_port == 9000
+            assert settings.log_level == "DEBUG"
 
     def test_settings_config_has_env_file(self):
         """Test that Settings Config specifies env_file."""

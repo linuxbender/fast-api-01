@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-FastAPI Application Runner with HTTPS Support
+FastAPI Application Runner with Required HTTPS Support
 
-This script starts the FastAPI server with optional HTTPS support based on
-environment configuration.
+This script starts the FastAPI server with HTTPS support.
+SSL certificates are auto-generated if they don't exist.
 
 Usage:
     uv run python run.py
-    uv run python run.py --https
     uv run python run.py --port 9000
     uv run python run.py --help
 """
@@ -23,7 +22,8 @@ except ImportError:
     sys.exit(1)
 
 from app.config.logger import get_logger
-from app.config.settings import get_settings, should_use_https
+from app.config.settings import get_settings, has_ssl_certificates
+from app.config.ssl_generator import SSLCertificateGenerator
 
 logger = get_logger(__name__)
 
@@ -43,11 +43,6 @@ def main():
         type=int,
         default=None,
         help="Server port (overrides config)",
-    )
-    parser.add_argument(
-        "--https",
-        action="store_true",
-        help="Enable HTTPS (requires certificates)",
     )
     parser.add_argument(
         "--no-reload",
@@ -71,33 +66,28 @@ def main():
     port = args.port or settings.server_port
     reload = not args.no_reload and settings.server_reload
 
-    # Determine HTTPS settings
-    use_https = args.https or settings.use_https
-    ssl_keyfile = None
-    ssl_certfile = None
+    # HTTPS is always required
+    # Auto-generate certificates if they don't exist
+    if not has_ssl_certificates():
+        logger.info("SSL certificates not found, generating self-signed certificates...")
+        cert_dir = str(Path(settings.ssl_keyfile).parent)
+        generator = SSLCertificateGenerator(cert_dir=cert_dir)
+        generator.create_certificate_directory()
+        generator.generate(days_valid=365)
+        logger.info(f"✅ Self-signed certificates generated in {generator.cert_dir}")
 
-    if use_https:
-        if not should_use_https():
-            print("❌ Error: HTTPS requested but certificates not found")
-            print("   Run: python setup_dev_env.py")
-            print("   Or set USE_HTTPS=false in .env")
-            sys.exit(1)
-
-        ssl_keyfile = settings.ssl_keyfile
-        ssl_certfile = settings.ssl_certfile
-        protocol = "https"
-    else:
-        protocol = "http"
+    ssl_keyfile = settings.ssl_keyfile
+    ssl_certfile = settings.ssl_certfile
+    protocol = "https"
 
     print("\n" + "=" * 60)
-    print("🚀 Starting FastAPI Server")
+    print("🚀 Starting FastAPI Server (HTTPS)")
     print("=" * 60)
     print(f"Environment: {settings.environment}")
     print(f"URL: {protocol}://{host}:{port}")
     print(f"Reload: {reload}")
-    if use_https:
-        print(f"SSL Key: {Path(ssl_keyfile).absolute()}")
-        print(f"SSL Cert: {Path(ssl_certfile).absolute()}")
+    print(f"SSL Key: {Path(ssl_keyfile).absolute()}")
+    print(f"SSL Cert: {Path(ssl_certfile).absolute()}")
     print("=" * 60 + "\n")
 
     logger.info(f"Starting server: {protocol}://{host}:{port}")

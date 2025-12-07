@@ -34,17 +34,6 @@
       }
     },
     {
-      "name": "Python: Demo Script",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "fastapi_01.__main__",
-      "console": "integratedTerminal",
-      "justMyCode": false,
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/src"
-      }
-    },
-    {
       "name": "Python: Pytest",
       "type": "debugpy",
       "request": "launch",

@@ -4,7 +4,8 @@ from sqlmodel import Session
 from app.config.correlation_id_middleware import CorrelationIdMiddleware
 from app.config.logger import get_logger, setup_logging
 from app.config.routes import get_route_config
-from app.config.settings import get_settings
+from app.config.settings import get_settings, has_ssl_certificates
+from app.config.ssl_generator import SSLCertificateGenerator
 from app.controller.v1.post_controller import PostController
 from app.data.database import engine
 from app.data.v1.model.post import Post
@@ -19,7 +20,18 @@ logger = get_logger(__name__)
 # Load settings from environment
 settings = get_settings()
 logger.info(f"Environment: {settings.environment}")
-logger.debug(f"HTTPS enabled: {settings.use_https}")
+
+# Ensure SSL certificates exist (auto-generate if needed)
+if not has_ssl_certificates():
+    logger.info("SSL certificates not found, generating self-signed certificates...")
+    generator = SSLCertificateGenerator(cert_dir=str(settings.ssl_keyfile.rsplit('/', 1)[0]))
+    generator.create_certificate_directory()
+    generator.generate(days_valid=365)
+    logger.info(f"✅ Self-signed certificates generated in {generator.cert_dir}")
+else:
+    logger.debug(f"✅ SSL certificates found: {settings.ssl_keyfile}")
+
+logger.debug("HTTPS enabled (required for all environments)")
 
 # Create database tables
 def create_db_and_tables():
