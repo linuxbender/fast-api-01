@@ -29,7 +29,7 @@ help:
 # Start FastAPI development server with HTTPS
 # SSL certificates are auto-generated if missing
 run:
-	uv run python run.py
+	uv run python -m app
 
 # Alternative alias for run
 dev: run

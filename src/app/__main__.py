@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-FastAPI Application Runner with Required HTTPS Support
+FastAPI Application Entry Point with HTTPS Support
 
-This script starts the FastAPI server with HTTPS support.
+This module is the entry point for running the FastAPI server.
 SSL certificates are auto-generated if they don't exist.
 
 Usage:
-    uv run python run.py
-    uv run python run.py --port 9000
-    uv run python run.py --help
+    uv run python -m app
+    uv run python -m app --port 9000
+    uv run python -m app --help
 """
 
 import argparse
@@ -31,7 +31,7 @@ logger = get_logger(__name__)
 def main():
     """Main entry point for running the FastAPI server."""
     parser = argparse.ArgumentParser(
-        description="Run FastAPI server with optional HTTPS support"
+        description="Run FastAPI server with HTTPS support"
     )
     parser.add_argument(
         "--host",

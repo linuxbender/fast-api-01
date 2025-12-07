@@ -63,9 +63,9 @@ async def lifespan(app: FastAPI):
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Generic API System",
+    title="Generic CRUD API",
     description=(
-        "FastAPI with generic operations using Repository, "
+        "FastAPI with generic CRUD operations using Repository, "
         "Service, and Controller pattern"
     ),
     version="1.0.0",
