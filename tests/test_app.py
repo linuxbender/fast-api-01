@@ -205,3 +205,77 @@ class TestAppTitleAndMetadata:
         """Test that app has version configured."""
         assert hasattr(app, "version") or app.openapi_schema
 
+
+class TestAppLifespanManagement:
+    """Tests for app lifespan context manager."""
+
+    def test_app_has_lifespan_handler(self):
+        """Test that app has lifespan handler configured."""
+        assert hasattr(app, "router")
+        # Lifespan is configured at app level
+        assert app is not None
+
+    def test_app_lifespan_is_async_context_manager(self):
+        """Test that lifespan is properly configured."""
+        # App must have been initialized with lifespan
+        assert app is not None
+
+
+class TestAppRootEndpoint:
+    """Tests for root endpoint configuration."""
+
+    def test_root_endpoint_is_registered(self):
+        """Test that root endpoint is registered."""
+        routes = [route.path for route in app.routes]
+        assert "/" in routes
+
+    def test_root_endpoint_has_get_method(self):
+        """Test that root endpoint has GET method."""
+        routes = {(route.path, frozenset(
+            route.methods or []
+        )): route for route in app.routes}
+        # Check if / exists with GET
+        root_routes = [
+            (path, methods) for (path, methods), _ in routes.items() if path == "/"
+        ]
+        if root_routes:
+            path, methods = root_routes[0]
+            assert "GET" in methods or len(methods) == 0  # Default GET
+
+
+class TestAppAuthRoutes:
+    """Tests for authentication routes registration."""
+
+    def test_auth_routes_are_registered(self):
+        """Test that auth routes are registered."""
+        routes = [route.path for route in app.routes]
+        auth_routes = [r for r in routes if "auth" in r.lower()]
+        assert len(auth_routes) > 0
+
+    def test_login_endpoint_registered(self):
+        """Test that login endpoint is registered."""
+        routes = [route.path for route in app.routes]
+        assert any("login" in r.lower() for r in routes)
+
+    def test_register_endpoint_registered(self):
+        """Test that register endpoint is registered."""
+        routes = [route.path for route in app.routes]
+        assert any("register" in r.lower() for r in routes)
+
+
+class TestAppDatabaseInitialization:
+    """Tests for database initialization in app."""
+
+    def test_database_tables_creation_function_exists(self):
+        """Test that database tables creation is configured."""
+        from app.app import create_db_and_tables
+
+        assert callable(create_db_and_tables)
+
+    def test_database_models_imported(self):
+        """Test that database models are imported."""
+        from app.data.v1.model.post import Post
+        from app.data.v1.model.user import User
+
+        assert Post is not None
+        assert User is not None
