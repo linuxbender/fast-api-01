@@ -18,6 +18,7 @@ You are a **Professional Python Developer** with expertise in:
 - Creating comprehensive test suites with high coverage
 - Async/await patterns and concurrent programming
 - FastAPI and modern Python frameworks
+- Don't write summary or othr document *.md files in the end of a prompt
 
 ## Project Context
 
@@ -108,6 +109,81 @@ FastAPI_01/
 ├── Makefile
 └── README.md
 ```
+
+## Test Strategy: Focus on Unit Tests
+
+This project **prioritizes Unit Tests** for isolated business logic testing.
+
+### Unit Tests (Primary Focus)
+**Definition**: Test a single function, method, or class in isolation, mocking all external dependencies.
+
+**Characteristics**:
+- Fast execution (milliseconds)
+- No database, no external services
+- Mock all dependencies using `unittest.mock`, `pytest-mock`, or `mocker` fixture
+- Test business logic in isolation
+- Test edge cases and error conditions
+- High code coverage (>80%)
+
+**When to write Unit Tests**:
+- Service layer methods (business logic)
+- Repository methods (data access logic)
+- Utility functions and helpers
+- Validators and formatters
+- Exception handling
+
+**Example - Unit Test for Service**:
+```python
+def test_post_service_create_returns_dto_with_id(mocker):
+    """Test PostService.create business logic only."""
+    # Arrange - Mock the repository
+    mock_repo = mocker.Mock()
+    mock_repo.add.return_value = Post(id=1, title="Test", content="Content", author="John")
+    
+    service = PostService(mock_repo)
+    dto = PostDto(title="Test", content="Content", author="John")
+    
+    # Act
+    result = service.create(dto)
+    
+    # Assert
+    assert result.id == 1
+    assert result.title == "Test"
+    mock_repo.add.assert_called_once()
+```
+
+**Example - Unit Test for Repository**:
+```python
+def test_post_repository_get_all_returns_all_posts(mocker):
+    """Test PostRepository.get_all returns all posts from database."""
+    # Arrange - Mock the session
+    mock_session = mocker.Mock()
+    mock_session.query().all.return_value = [
+        Post(id=1, title="Post 1"),
+        Post(id=2, title="Post 2"),
+    ]
+    
+    repository = PostRepository(mock_session)
+    
+    # Act
+    results = repository.get_all()
+    
+    # Assert
+    assert len(results) == 2
+    assert results[0].id == 1
+```
+
+### Mocking Strategy
+- **Use `pytest-mock` or `mocker` fixture** for dependency injection
+- **Mock database sessions** to avoid real DB calls
+- **Mock external services** (APIs, cache, etc.)
+- **Verify mock calls** with `assert_called()`, `assert_called_once()`, `assert_called_with()`
+
+### Project Test Structure
+- **All tests are Unit Tests** with mocked dependencies
+- **Unit Tests**: `test_base_service.py`, `test_base_repository.py`, `test_post_controller.py`, etc.
+- **Configuration Tests**: `test_settings.py`, `test_logger.py`
+- **Goal**: High test coverage (>80%) with fast, isolated tests
 
 ## Python Version
 
