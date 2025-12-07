@@ -82,3 +82,5 @@ dmypy.json
 .env.staging
 .env.prod
 .env.production
+certs/certificate.crt
+certs/private.key

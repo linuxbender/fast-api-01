@@ -1,1 +1,1 @@
-"""Tests for fastapi_01 package"""
+"""Tests for app package"""
