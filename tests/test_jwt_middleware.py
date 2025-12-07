@@ -4,7 +4,8 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from app.config.jwt_middleware import JWTValidationMiddleware
-from app.security.jwt import DEFAULT_ALGORITHM, DEFAULT_SECRET_KEY
+from app.config.settings import get_settings
+from app.security.jwt import DEFAULT_ALGORITHM
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from jose import jwt
@@ -56,6 +57,7 @@ def create_token(
     Returns:
         Encoded JWT token
     """
+    settings = get_settings()
     to_encode = data.copy()
 
     if is_expired:
@@ -68,7 +70,7 @@ def create_token(
 
     to_encode.update({"exp": expire, "iat": datetime.now(UTC)})
 
-    return jwt.encode(to_encode, DEFAULT_SECRET_KEY, algorithm=DEFAULT_ALGORITHM)
+    return jwt.encode(to_encode, settings.secret_key, algorithm=DEFAULT_ALGORITHM)
 
 
 def test_public_endpoint_without_token(client):

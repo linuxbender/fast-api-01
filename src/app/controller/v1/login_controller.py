@@ -98,8 +98,6 @@ class LoginController:
             user_dto = user_service.get_user_by_id(user.id)
 
             return LoginResponseDto(
-                access_token=access_token,
-                token_type="bearer",
                 user=user_dto,
             )
 
@@ -380,8 +378,6 @@ class LoginController:
                 logger.info(f"User logged in with code: {request.email}")
 
                 return LoginResponseDto(
-                    access_token=access_token,
-                    token_type="bearer",
                     user=UserResponseDto(
                         id=user.id,
                         name=user.name,

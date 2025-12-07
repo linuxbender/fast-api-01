@@ -13,7 +13,8 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse, Response
 
 from app.config.logger import get_logger
-from app.security.jwt import DEFAULT_ALGORITHM, DEFAULT_SECRET_KEY
+from app.config.settings import get_settings
+from app.security.jwt import DEFAULT_ALGORITHM
 
 logger = get_logger(__name__)
 
@@ -185,9 +186,10 @@ class JWTValidationMiddleware(BaseHTTPMiddleware):
                     }
 
             # Now verify with expiration check
+            settings = get_settings()
             payload = jwt.decode(
                 token,
-                DEFAULT_SECRET_KEY,
+                settings.secret_key,
                 algorithms=[DEFAULT_ALGORITHM],
             )
 

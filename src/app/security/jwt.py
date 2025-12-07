@@ -5,10 +5,10 @@ from datetime import UTC, datetime, timedelta
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
-# Default settings - can be overridden via environment variables
+from app.config.settings import get_settings
+
+# Default algorithm (can be overridden)
 DEFAULT_ALGORITHM = "HS256"
-DEFAULT_SECRET_KEY = "your-secret-key-change-in-production"
-DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 class TokenData(BaseModel):
@@ -22,7 +22,7 @@ class TokenData(BaseModel):
 
 def create_access_token(
     data: dict,
-    secret_key: str = DEFAULT_SECRET_KEY,
+    secret_key: str | None = None,
     algorithm: str = DEFAULT_ALGORITHM,
     expires_delta: timedelta | None = None,
 ) -> str:
@@ -30,19 +30,25 @@ def create_access_token(
 
     Args:
         data: Token payload data
-        secret_key: Secret key for token signing
+        secret_key: Secret key for token signing (uses settings if None)
         algorithm: Algorithm for token signing
         expires_delta: Token expiration time
 
     Returns:
         Encoded JWT token
     """
+    settings = get_settings()
+    if secret_key is None:
+        secret_key = settings.secret_key
+
     to_encode = data.copy()
 
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
     else:
-        expire = datetime.now(UTC) + timedelta(minutes=DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(UTC) + timedelta(
+            minutes=settings.access_token_expire_minutes
+        )
 
     to_encode.update({"exp": expire, "iat": datetime.now(UTC)})
 
@@ -52,19 +58,23 @@ def create_access_token(
 
 def verify_access_token(
     token: str,
-    secret_key: str = DEFAULT_SECRET_KEY,
+    secret_key: str | None = None,
     algorithm: str = DEFAULT_ALGORITHM,
 ) -> TokenData | None:
     """Verify JWT access token.
 
     Args:
         token: JWT token to verify
-        secret_key: Secret key for token verification
+        secret_key: Secret key for token verification (uses settings if None)
         algorithm: Algorithm for token verification
 
     Returns:
         Token data if valid, None otherwise
     """
+    settings = get_settings()
+    if secret_key is None:
+        secret_key = settings.secret_key
+
     try:
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
         user_id: int = payload.get("user_id")

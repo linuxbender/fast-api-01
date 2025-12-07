@@ -94,10 +94,11 @@ class LoginRequestDto(BaseModel):
 
 
 class LoginResponseDto(BaseModel):
-    """DTO for login response."""
+    """DTO for login response.
 
-    access_token: str
-    token_type: str
+    Note: access_token is sent via HTTP-Only Secure Cookie, not in response body.
+    """
+
     user: UserResponseDto
 
 
