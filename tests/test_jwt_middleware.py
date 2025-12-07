@@ -3,12 +3,11 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from app.config.jwt_middleware import JWTValidationMiddleware
+from app.security.jwt import DEFAULT_ALGORITHM, DEFAULT_SECRET_KEY
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from jose import jwt
-
-from app.config.jwt_middleware import JWTValidationMiddleware
-from app.security.jwt import DEFAULT_ALGORITHM, DEFAULT_SECRET_KEY
 
 # Create a test app
 test_app = FastAPI()

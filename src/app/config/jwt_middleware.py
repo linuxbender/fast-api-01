@@ -7,7 +7,7 @@ checks if they are expired, and returns redirect information if needed.
 
 from datetime import UTC, datetime
 
-from fastapi import Cookie, Request
+from fastapi import Request
 from jose import JWTError, jwt
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse, Response
