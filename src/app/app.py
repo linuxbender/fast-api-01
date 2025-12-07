@@ -4,6 +4,7 @@ from fastapi import APIRouter, FastAPI
 from sqlmodel import Session
 
 from app.config.correlation_id_middleware import CorrelationIdMiddleware
+from app.config.jwt_middleware import JWTValidationMiddleware
 from app.config.logger import get_logger, setup_logging
 from app.config.routes import get_route_config
 from app.config.settings import get_settings, has_ssl_certificates
@@ -77,6 +78,9 @@ app = FastAPI(
 
 # Add correlation ID middleware (must be added before other middlewares)
 app.add_middleware(CorrelationIdMiddleware)
+
+# Add JWT validation middleware
+app.add_middleware(JWTValidationMiddleware)
 
 # Setup CORS
 setup_cors(app)

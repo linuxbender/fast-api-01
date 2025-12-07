@@ -26,7 +26,7 @@ def set_correlation_id(correlation_id: str) -> None:
 
 def generate_correlation_id() -> str:
     """Generate a new correlation ID."""
-    return str(uuid.uuid4())[:8]
+    return str(uuid.uuid4())[:16]
 
 
 class CorrelationIdFilter(logging.Filter):
