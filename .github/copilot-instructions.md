@@ -29,74 +29,6 @@ This project uses **uv** as the Python package manager and build tool.
 - Dependencies are defined in `pyproject.toml`
 - Lock file: `uv.lock`
 
-## Commands
-
-### Installation and Setup
-```bash
-# Install dependencies
-uv sync
-
-# Add a new dependency
-uv add <package-name>
-
-# Add a dev dependency
-uv add --dev <package-name>
-
-# Remove a dependency
-uv remove <package-name>
-```
-
-### Execution
-```bash
-# Run a Python script
-uv run python <script.py>
-
-# Run a module
-uv run python -m <module>
-
-# Run this project
-uv run python -m fastapi_01
-
-# Run a specific script
-uv run python src/fastapi_01/DemoAsync.py
-```
-
-### Testing
-```bash
-# Run all tests
-uv run pytest
-
-# Run tests with coverage report
-uv run pytest --cov=src/fastapi_01
-
-# Run tests with verbose output
-uv run pytest -v
-
-# Run specific test file
-uv run pytest tests/test_app.py
-
-# Run tests matching a pattern
-uv run pytest -k "test_async"
-
-# Generate HTML coverage report
-uv run pytest --cov=src/fastapi_01 --cov-report=html
-```
-
-### Development
-```bash
-# Start Python REPL
-uv run python
-
-# Run with hot reload (if applicable)
-uv run python -m fastapi_01 --reload
-
-# Format code
-uv run black src/ tests/
-
-# Lint code
-uv run ruff check src/ tests/
-```
-
 ## Testing Best Practices
 
 When writing or suggesting code, **always include tests**:
@@ -110,20 +42,6 @@ When writing or suggesting code, **always include tests**:
 7. **Test async functions with pytest-asyncio**
 8. **Include docstrings in test functions explaining what is being tested**
 
-### Test Structure Example
-```python
-def test_function_with_valid_input_returns_expected_result():
-    """Test that function correctly processes valid input."""
-    # Arrange
-    input_data = "test"
-    expected = "TEST"
-    
-    # Act
-    result = function(input_data)
-    
-    # Assert
-    assert result == expected
-```
 
 ## Important Rules
 
@@ -141,21 +59,53 @@ def test_function_with_valid_input_returns_expected_result():
 ```
 FastAPI_01/
 ├── src/
-│   └── fastapi_01/
+│   └── app/
 │       ├── __init__.py
 │       ├── __main__.py
-│       ├── App.py
-│       ├── Demo.py
-│       └── DemoAsync.py
+│       ├── app.py
+│       ├── config/
+│       │   ├── correlation_id_middleware.py
+│       │   ├── dependencies.py
+│       │   ├── exceptions.py
+│       │   ├── logger.py
+│       │   ├── routes.py
+│       │   ├── settings.py
+│       │   └── ssl_generator.py
+│       ├── controller/
+│       │   └── v1/
+│       │       ├── base_controller.py
+│       │       ├── post_controller.py
+│       │       └── dto/
+│       │           └── post_dto.py
+│       ├── data/
+│       │   └── v1/
+│       │       ├── base_repository.py
+│       │       ├── post_repository.py
+│       │       └── model/
+│       │           └── post.py
+│       ├── service/
+│       │   └── v1/
+│       │       ├── base_service.py
+│       │       └── post_service.py
+│       └── security/
+│           └── cors_config.py
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py
 │   ├── test_app.py
-│   └── test_*.py  # Additional test files
+│   ├── test_base_repository.py
+│   ├── test_base_service.py
+│   ├── test_logger.py
+│   ├── test_post_controller.py
+│   ├── test_routes.py
+│   ├── test_settings.py
+│   └── __pycache__/
 ├── docs/
 │   └── *.md
+├── certs/
 ├── pyproject.toml
 ├── uv.lock
+├── Makefile
 └── README.md
 ```
 
