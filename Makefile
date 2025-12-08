@@ -38,6 +38,12 @@ dev: run
 # Environment Configuration
 # ================================
 
+# Switch to base environment
+env:
+	@echo "📝 Switching to env..."
+	cp .env .env
+	@echo "✅ Using .env (DEBUG, SQLite, HTTPS)"
+
 # Switch to development environment
 env-dev:
 	@echo "📝 Switching to development environment..."

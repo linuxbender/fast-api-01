@@ -1,6 +1,6 @@
 """Login code model for passwordless authentication."""
 
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlmodel import Column, Field, SQLModel, String
 
@@ -29,11 +29,11 @@ class LoginCode(SQLModel, table=True):
         description="6-digit login code",
     )
     expires_at: datetime = Field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=lambda: datetime.now(),
         description="Code expiration timestamp",
     )
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(UTC),
+        default_factory=lambda: datetime.now(),
         description="Code creation timestamp",
     )
     is_used: bool = Field(default=False, description="Whether code has been used")
@@ -44,13 +44,8 @@ class LoginCode(SQLModel, table=True):
         Returns:
             True if code is expired, False otherwise
         """
-        # Handle both timezone-aware and naive datetimes
-        if self.expires_at.tzinfo is None:
-            # Naive datetime - use naive comparison
-            return datetime.now() > self.expires_at
-        else:
-            # Aware datetime - use aware comparison
-            return datetime.now(UTC) > self.expires_at
+        # Database stores naive datetimes - always use naive comparison
+        return datetime.now() > self.expires_at
 
     def is_valid(self) -> bool:
         """Check if code is valid (not expired and not used).

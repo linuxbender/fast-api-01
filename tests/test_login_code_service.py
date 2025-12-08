@@ -1,6 +1,6 @@
 """Tests for login code service and passwordless authentication."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from app.data.v1.login_code_repository import LoginCodeRepository
@@ -58,7 +58,7 @@ class TestCreateLoginCode:
             id=1,
             email=email,
             code="123456",
-            expires_at=datetime.now(UTC) + timedelta(minutes=15),
+            expires_at=datetime.now() + timedelta(minutes=15),
         )
         login_code_repo.create_code.return_value = expected_code
         login_code_repo.delete_expired_codes.return_value = 0
@@ -84,7 +84,7 @@ class TestCreateLoginCode:
             id=1,
             email=email,
             code="123456",
-            expires_at=datetime.now(UTC) + timedelta(minutes=30),
+            expires_at=datetime.now() + timedelta(minutes=30),
         )
         login_code_repo.create_code.return_value = expected_code
         login_code_repo.delete_expired_codes.return_value = 0
@@ -110,7 +110,7 @@ class TestVerifyLoginCode:
             id=1,
             email=email,
             code=code,
-            expires_at=datetime.now(UTC) + timedelta(minutes=15),
+            expires_at=datetime.now() + timedelta(minutes=15),
             is_used=False,
         )
         login_code_repo.get_active_code.return_value = login_code
@@ -154,7 +154,7 @@ class TestVerifyLoginCode:
             id=1,
             email=email,
             code=code,
-            expires_at=datetime.now(UTC) + timedelta(minutes=15),
+            expires_at=datetime.now() + timedelta(minutes=15),
             is_used=False,
         )
         login_code_repo.get_active_code.return_value = login_code
@@ -183,7 +183,7 @@ class TestLoginCodeValidity:
             id=1,
             email="user@example.com",
             code="123456",
-            expires_at=datetime.now(UTC) + timedelta(minutes=10),
+            expires_at=datetime.now() + timedelta(minutes=10),
             is_used=False,
         )
         assert login_code_service.code_is_valid(login_code)
@@ -194,7 +194,7 @@ class TestLoginCodeValidity:
             id=1,
             email="user@example.com",
             code="123456",
-            expires_at=datetime.now(UTC) - timedelta(minutes=5),
+            expires_at=datetime.now() - timedelta(minutes=5),
             is_used=False,
         )
         assert not login_code_service.code_is_valid(login_code)
@@ -205,14 +205,14 @@ class TestLoginCodeValidity:
             id=1,
             email="user@example.com",
             code="123456",
-            expires_at=datetime.now(UTC) + timedelta(minutes=10),
+            expires_at=datetime.now() + timedelta(minutes=10),
             is_used=True,
         )
         assert not login_code_service.code_is_valid(login_code)
 
     def test_expiration_time_calculation(self, login_code_service):
         """Test expiration time calculation."""
-        expires_at = datetime.now(UTC) + timedelta(seconds=30)
+        expires_at = datetime.now() + timedelta(seconds=30)
         login_code = LoginCode(
             id=1,
             email="user@example.com",
@@ -229,7 +229,7 @@ class TestLoginCodeValidity:
             id=1,
             email="user@example.com",
             code="123456",
-            expires_at=datetime.now(UTC) - timedelta(minutes=5),
+            expires_at=datetime.now() - timedelta(minutes=5),
             is_used=False,
         )
         remaining = login_code_service.code_expiration_time(login_code)

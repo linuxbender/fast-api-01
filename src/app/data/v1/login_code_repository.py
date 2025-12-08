@@ -1,6 +1,6 @@
 """Repository for login codes."""
 
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 
 from sqlmodel import Session, select
 
@@ -33,7 +33,7 @@ class LoginCodeRepository(BaseRepository[LoginCode]):
         login_code = LoginCode(
             email=email,
             code=code,
-            expires_at=datetime.now(UTC) + timedelta(minutes=expires_in_minutes),
+            expires_at=datetime.now() + timedelta(minutes=expires_in_minutes),
         )
         return self.add(login_code)
 
@@ -120,11 +120,11 @@ class LoginCodeRepository(BaseRepository[LoginCode]):
         if email:
             statement = select(LoginCode).where(
                 LoginCode.email == email,
-                LoginCode.expires_at < datetime.now(UTC),
+                LoginCode.expires_at < datetime.now(),
             )
         else:
             statement = select(LoginCode).where(
-                LoginCode.expires_at < datetime.now(UTC),
+                LoginCode.expires_at < datetime.now(),
             )
 
         codes = self.session.exec(statement).all()

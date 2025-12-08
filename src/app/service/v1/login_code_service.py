@@ -2,7 +2,7 @@
 
 import secrets
 import string
-from datetime import UTC, datetime
+from datetime import datetime
 
 from app.config.logger import get_logger
 from app.data.v1.login_code_repository import LoginCodeRepository
@@ -132,5 +132,5 @@ class LoginCodeService:
         if login_code.is_expired():
             return -1
 
-        delta = login_code.expires_at - datetime.now(UTC)
+        delta = login_code.expires_at - datetime.now()
         return int(delta.total_seconds())

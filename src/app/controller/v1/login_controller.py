@@ -12,7 +12,6 @@ from app.controller.v1.dto.user_dto import (
     LoginCodeRequestDto,
     LoginCodeResponseDto,
     LoginCodeVerifyDto,
-    LoginRequestDto,
     LoginResponseDto,
     MeResponseDto,
     UserCreateDto,
@@ -44,62 +43,6 @@ class LoginController:
 
     def register_routes(self) -> None:
         """Register all authentication routes."""
-
-        @self.router.post(
-            "/login",
-            response_model=LoginResponseDto,
-            status_code=status.HTTP_200_OK,
-            summary="Login",
-            description="Login with email and password",
-        )
-        async def login(
-            request: LoginRequestDto,
-            response: Response,
-            session: Session = Depends(get_session),  # noqa: B008
-        ) -> LoginResponseDto:
-            """Login with email and password."""
-            logger.debug(f"Login attempt for email: {request.email}")
-            user_repo = UserRepository(session)
-            user_service = UserService(user_repo)
-
-            # Authenticate user
-            user = user_service.authenticate_user(request.email, request.password)
-            if not user:
-                logger.warning(f"Failed login attempt for email: {request.email}")
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid email or password",
-                )
-
-            # Create access token
-            token_data = {
-                "user_id": user.id,
-                "email": user.email,
-                "rights": ["READ", "EDIT"],
-                "groups": ["ACTIVE_USER"],
-            }
-            access_token = create_access_token(
-                data=token_data,
-                expires_delta=timedelta(minutes=30),
-            )
-
-            # Set HTTP-Only Cookie with token
-            response.set_cookie(
-                key="access_token",
-                value=f"bearer {access_token}",
-                max_age=30 * 60,  # 30 minutes
-                expires=30 * 60,
-                httponly=True,
-                secure=True,  # HTTPS only
-                samesite="strict",
-            )
-
-            # Convert user to DTO
-            user_dto = user_service.get_user_by_id(user.id)
-
-            return LoginResponseDto(
-                user=user_dto,
-            )
 
         @self.router.post(
             "/register",
@@ -345,7 +288,7 @@ class LoginController:
                     )
 
                 # Get full user data
-                user = user_repo.get_by_id(user_info["user_id"])
+                user = user_repo.read(user_info["user_id"])
                 if not user:
                     logger.error(f"User not found after code verification: {request.email}")
                     raise HTTPException(
